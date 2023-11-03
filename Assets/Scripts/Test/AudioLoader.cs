@@ -7,12 +7,7 @@ public class AudioLoader : MonoBehaviour
     [SerializeField]
     private AudioSource audioSource;
 
-    public void LoadAudioAndPlay(string songPath)
-    {
-        StartCoroutine(LoadAudioCoroutine(songPath));
-    }
-
-    private IEnumerator LoadAudioCoroutine(string songPath)
+    public IEnumerator LoadAudio(string songPath)
     {
         UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(songPath, AudioType.MPEG);
         yield return request.SendWebRequest();
@@ -25,7 +20,6 @@ public class AudioLoader : MonoBehaviour
         {
             AudioClip audioClip = DownloadHandlerAudioClip.GetContent(request);
             audioSource.clip = audioClip;
-            audioSource.Play();
         }
     }
 }

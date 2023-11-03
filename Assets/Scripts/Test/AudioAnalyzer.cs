@@ -72,6 +72,8 @@ public class AudioAnalyzer : MonoBehaviour
         //for (int i = 0; i < frequencies.Length; i++)
         //    bassPoints[i] = new Vector3(300f * i / frequencies.Length, (float)frequencies[i][frequencyIndex]);
         //splineVisualizer2.SetPoints(bassPoints);
+
+        audioSource.Play();
     }
 
     void Update()
