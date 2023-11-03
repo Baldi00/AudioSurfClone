@@ -7,8 +7,6 @@ public class AudioAnalyzer : MonoBehaviour
     private AudioSource audioSource;
     [SerializeField]
     private Splines splineVisualizer;
-    [SerializeField]
-    private Splines splineVisualizer2;
 
     private int entireSongTimeSamples;
     float[] intensities;
@@ -55,14 +53,25 @@ public class AudioAnalyzer : MonoBehaviour
 
         // Intensity visualization
         Vector3[] intensityPoints = new Vector3[intensities.Length];
-        float previousPointHeight = 0;
+        float[] slopePoints = new float[intensities.Length];
+        float previousPointX = 0;
+        float previousPointY = 0;
         for (int i = 0; i < intensities.Length; i++)
         {
-            float currentPointHeight = previousPointHeight + Mathf.Lerp(0.5f,-0.5f, Mathf.InverseLerp(0,0.7f, intensities[i]));
-            intensityPoints[i] = new Vector3(3000f * i / intensities.Length, currentPointHeight);
-            previousPointHeight = currentPointHeight;
+            float slope = Mathf.Lerp(0.5f, -0.5f, Mathf.InverseLerp(0, 0.5f, intensities[i]));
+            float speedInv = Mathf.Lerp(0.3f, 3f, Mathf.InverseLerp(0, 0.5f, intensities[i]));
+            float currentPointX = previousPointX + speedInv;
+            float currentPointY = previousPointY + slope * (intensities[i] + 0.25f);
+            intensityPoints[i] = new Vector3(currentPointX, currentPointY);
+            if (i == 0)
+                slopePoints[i] = slope;
+            else
+                slopePoints[i] = Mathf.Lerp(slopePoints[i-1], slope, 0.05f);
+
+            previousPointX = currentPointX;
+            previousPointY = currentPointY;
         }
-        splineVisualizer.SetPoints(intensityPoints);
+        splineVisualizer.SetPoints(intensityPoints, slopePoints);
         splineVisualizer.GenerateMesh();
 
         // Frequency visualization
@@ -79,6 +88,5 @@ public class AudioAnalyzer : MonoBehaviour
     void Update()
     {
         splineVisualizer.SetCurrentTime(audioSource.time / audioSource.clip.length);
-        splineVisualizer2.SetCurrentTime(audioSource.time / audioSource.clip.length);
     }
 }
