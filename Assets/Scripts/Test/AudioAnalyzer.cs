@@ -32,40 +32,46 @@ public class AudioAnalyzer : MonoBehaviour
         }
 
         // Frequencies computation
-        double[] audioDataChunk = new double[128];
-        System.Numerics.Complex[] audioDataChunkComplex = new System.Numerics.Complex[128];
-        System.Numerics.Complex[] spectrumComplex = new System.Numerics.Complex[128];
-        double[] spectrum = new double[128];
-        frequencies = new double[entireSongTimeSamples / 128][];
+        //double[] audioDataChunk = new double[128];
+        //System.Numerics.Complex[] audioDataChunkComplex = new System.Numerics.Complex[128];
+        //System.Numerics.Complex[] spectrumComplex = new System.Numerics.Complex[128];
+        //double[] spectrum = new double[128];
+        //frequencies = new double[entireSongTimeSamples / 128][];
 
-        for (int i = 0; i < entireSongTimeSamples; i += 128)
-        {
-            for (int j = 0; j < 128; j++)
-                audioDataChunk[j] = audioData[i + j];
+        //for (int i = 0; i < entireSongTimeSamples; i += 128)
+        //{
+        //    for (int j = 0; j < 128; j++)
+        //        audioDataChunk[j] = audioData[i + j];
 
-            audioDataChunkComplex = FastFourierTransform.doubleToComplex(audioDataChunk);
-            spectrumComplex = FastFourierTransform.FFT(audioDataChunkComplex, false);
+        //    audioDataChunkComplex = FastFourierTransform.doubleToComplex(audioDataChunk);
+        //    spectrumComplex = FastFourierTransform.FFT(audioDataChunkComplex, false);
 
-            for (int j = 0; j < 128; j++)
-                spectrum[j] = spectrumComplex[j].Magnitude;
+        //    for (int j = 0; j < 128; j++)
+        //        spectrum[j] = spectrumComplex[j].Magnitude;
 
-            frequencies[i / 128] = new double[128];
-            System.Array.Copy(spectrum, frequencies[i / 128], 128);
-        }
+        //    frequencies[i / 128] = new double[128];
+        //    System.Array.Copy(spectrum, frequencies[i / 128], 128);
+        //}
 
         // Intensity visualization
         Vector3[] intensityPoints = new Vector3[intensities.Length];
+        float previousPointHeight = 0;
         for (int i = 0; i < intensities.Length; i++)
-            intensityPoints[i] = new Vector3(300f * i / intensities.Length, intensities[i]*10 - 10);
+        {
+            float currentPointHeight = previousPointHeight + Mathf.Lerp(0.5f,-0.5f, Mathf.InverseLerp(0,0.7f, intensities[i]));
+            intensityPoints[i] = new Vector3(3000f * i / intensities.Length, currentPointHeight);
+            previousPointHeight = currentPointHeight;
+        }
         splineVisualizer.SetPoints(intensityPoints);
+        splineVisualizer.GenerateMesh();
 
         // Frequency visualization
-        int frequency = 20; // 20->20000
-        int frequencyIndex = (int)(128f / (20000 - 20) * frequency);
-        Vector3[] bassPoints = new Vector3[frequencies.Length];
-        for (int i = 0; i < frequencies.Length; i++)
-            bassPoints[i] = new Vector3(300f * i / frequencies.Length, (float)frequencies[i][frequencyIndex]);
-        splineVisualizer2.SetPoints(bassPoints);
+        //int frequency = 20; // 20->20000
+        //int frequencyIndex = (int)(128f / (20000 - 20) * frequency);
+        //Vector3[] bassPoints = new Vector3[frequencies.Length];
+        //for (int i = 0; i < frequencies.Length; i++)
+        //    bassPoints[i] = new Vector3(300f * i / frequencies.Length, (float)frequencies[i][frequencyIndex]);
+        //splineVisualizer2.SetPoints(bassPoints);
     }
 
     void Update()
