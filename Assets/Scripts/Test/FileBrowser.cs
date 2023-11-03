@@ -9,6 +9,8 @@ public class FileBrowser : MonoBehaviour
     private GameObject buttonsContainer;
     [SerializeField]
     private GameObject buttonPrefab;
+    [SerializeField]
+    private AudioLoader audioLoader;
 
     private string currentPath = "C:\\";
 
@@ -44,6 +46,7 @@ public class FileBrowser : MonoBehaviour
             if (file.EndsWith(".mp3") || file.EndsWith(".wav"))
             {
                 GameObject nextFile = Instantiate(buttonPrefab, buttonsContainer.transform);
+                nextFile.GetComponent<Button>().onClick.AddListener(() => LoadAudio(Path.Combine(currentPath, file)));
                 nextFile.GetComponentInChildren<Text>().text = file.Substring(file.LastIndexOf("\\") + 1);
             }
         }
@@ -58,5 +61,10 @@ public class FileBrowser : MonoBehaviour
             GameObject child = parent.transform.GetChild(i).gameObject;
             Destroy(child);
         }
+    }
+
+    private void LoadAudio(string songPath)
+    {
+        audioLoader.LoadAudioAndPlay("file:\\\\" + songPath);
     }
 }
