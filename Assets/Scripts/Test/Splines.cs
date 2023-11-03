@@ -16,6 +16,9 @@ public class Splines : MonoBehaviour
     [SerializeField]
     private float meshThickness = 1;
 
+    [SerializeField]
+    private Transform spaceship;
+
     private Vector3[] points;
     private float[] slopePoints;
 
@@ -26,9 +29,12 @@ public class Splines : MonoBehaviour
     {
         int u = (int)(currentTime * points.Length);
         float interpolator = (currentTime * points.Length) % 1;
-        Vector3 point = GetCurvePoint(interpolator, points[u], points[u + 1], points[u + 2], points[u + 3]) + Vector3.up * 2;
-        Camera.main.transform.position = point;
-        Camera.main.transform.forward = Vector3.Lerp(Camera.main.transform.forward, GetCurveTangent(interpolator, points[u], points[u + 1], points[u + 2], points[u + 3]), 2.5f * Time.deltaTime);
+        Vector3 point = GetCurvePoint(interpolator, points[u], points[u + 1], points[u + 2], points[u + 3]);
+        Vector3 tangent = GetCurveTangent(interpolator, points[u], points[u + 1], points[u + 2], points[u + 3]);
+        Camera.main.transform.position = point + Vector3.up - Vector3.right * 5;
+        Camera.main.transform.forward = Vector3.Lerp(Camera.main.transform.forward, tangent, 2.5f * Time.deltaTime);
+        spaceship.position = point;
+        spaceship.forward = Vector3.Lerp(spaceship.forward, tangent, 2.5f * Time.deltaTime);
     }
 
     public void SetPoints(Vector3[] points, float[] slopePoints)
