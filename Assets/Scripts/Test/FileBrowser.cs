@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class FileBrowser : MonoBehaviour
@@ -10,14 +11,10 @@ public class FileBrowser : MonoBehaviour
     private GameObject buttonsContainer;
     [SerializeField]
     private GameObject buttonPrefab;
-    [SerializeField]
-    private AudioLoader audioLoader;
-    [SerializeField]
-    private GameObject gameScene;
-    [SerializeField]
-    private GameObject selectUiScene;
 
     private string currentPath = "C:\\";
+
+    private UnityEvent<string> onAudioFileSelected;
 
     void Start()
     {
@@ -51,10 +48,16 @@ public class FileBrowser : MonoBehaviour
             if (file.EndsWith(".mp3") || file.EndsWith(".wav"))
             {
                 GameObject nextFile = Instantiate(buttonPrefab, buttonsContainer.transform);
-                nextFile.GetComponent<Button>().onClick.AddListener(() => StartCoroutine(LoadAudioAndStartGame(Path.Combine(currentPath, file))));
+                nextFile.GetComponent<Button>().onClick.AddListener(() => onAudioFileSelected.Invoke(Path.Combine(currentPath, file)));
                 nextFile.GetComponentInChildren<Text>().text = file.Substring(file.LastIndexOf("\\") + 1);
             }
         }
+    }
+
+    public void AddOnAudioFileSelectedListener(UnityAction<string> listener)
+    {
+        onAudioFileSelected ??= new UnityEvent<string>();
+        onAudioFileSelected.AddListener(listener);
     }
 
     private void DeleteChildrenOfGameObject(GameObject parent)
@@ -66,12 +69,5 @@ public class FileBrowser : MonoBehaviour
             GameObject child = parent.transform.GetChild(i).gameObject;
             Destroy(child);
         }
-    }
-
-    private IEnumerator LoadAudioAndStartGame(string songPath)
-    {
-        yield return StartCoroutine(audioLoader.LoadAudio("file:\\\\" + songPath));
-        selectUiScene.SetActive(false);
-        gameScene.SetActive(true);
     }
 }

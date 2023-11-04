@@ -4,10 +4,7 @@ using UnityEngine.Networking;
 
 public class AudioLoader : MonoBehaviour
 {
-    [SerializeField]
-    private AudioSource audioSource;
-
-    public IEnumerator LoadAudio(string songPath)
+    public static IEnumerator LoadAudio(string songPath, AudioSource audioSource)
     {
         UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(songPath, AudioType.MPEG);
         yield return request.SendWebRequest();

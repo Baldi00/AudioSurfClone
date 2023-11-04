@@ -1,92 +1,56 @@
 using UnityEngine;
 
-[RequireComponent(typeof(AudioSource))]
 public class AudioAnalyzer : MonoBehaviour
 {
-    [SerializeField]
-    private AudioSource audioSource;
-    [SerializeField]
-    private Splines splineVisualizer;
-
-    private int entireSongTimeSamples;
-    float[] intensities;
-    double[][] frequencies;
-
-    void Start()
+    public static float[] GetAudioData(AudioClip audioClip)
     {
-        entireSongTimeSamples = audioSource.clip.samples * audioSource.clip.channels;
-        float[] audioData = new float[entireSongTimeSamples];
-        audioSource.clip.GetData(audioData, 0);
+        int sampleCount = audioClip.samples * audioClip.channels;
+        float[] audioData = new float[sampleCount];
+        audioClip.GetData(audioData, 0);
+        return audioData;
+    }
 
-        // Intensity computation
-        intensities = new float[entireSongTimeSamples / 4096];
+    public static float[] GetAudioIntensities(AudioClip audioClip, int windowsSize)
+    {
+        float[] audioData = GetAudioData(audioClip);
+        float[] intensities = new float[audioData.Length / windowsSize];
 
         for (int i = 0; i < intensities.Length; i++)
         {
             intensities[i] = 0;
-            for (int j = 0; j < 4096; j++)
-                intensities[i] += Mathf.Abs(audioData[i * 4096 + j]);
-            intensities[i] /= 4096;
+            for (int j = 0; j < windowsSize; j++)
+                intensities[i] += Mathf.Abs(audioData[i * windowsSize + j]);
+            intensities[i] /= windowsSize;
         }
 
-        // Frequencies computation
-        //double[] audioDataChunk = new double[128];
-        //System.Numerics.Complex[] audioDataChunkComplex = new System.Numerics.Complex[128];
-        //System.Numerics.Complex[] spectrumComplex = new System.Numerics.Complex[128];
-        //double[] spectrum = new double[128];
-        //frequencies = new double[entireSongTimeSamples / 128][];
-
-        //for (int i = 0; i < entireSongTimeSamples; i += 128)
-        //{
-        //    for (int j = 0; j < 128; j++)
-        //        audioDataChunk[j] = audioData[i + j];
-
-        //    audioDataChunkComplex = FastFourierTransform.doubleToComplex(audioDataChunk);
-        //    spectrumComplex = FastFourierTransform.FFT(audioDataChunkComplex, false);
-
-        //    for (int j = 0; j < 128; j++)
-        //        spectrum[j] = spectrumComplex[j].Magnitude;
-
-        //    frequencies[i / 128] = new double[128];
-        //    System.Array.Copy(spectrum, frequencies[i / 128], 128);
-        //}
-
-        // Intensity visualization
-        Vector3[] intensityPoints = new Vector3[intensities.Length];
-        float[] slopePoints = new float[intensities.Length];
-        float previousPointX = 0;
-        float previousPointY = 0;
-        for (int i = 0; i < intensities.Length; i++)
-        {
-            float slope = Mathf.Lerp(0.5f, -0.5f, Mathf.InverseLerp(0, 0.5f, intensities[i]));
-            float speedInv = Mathf.Lerp(0.3f, 3f, Mathf.InverseLerp(0, 0.5f, intensities[i]));
-            float currentPointX = previousPointX + speedInv;
-            float currentPointY = previousPointY + slope * (intensities[i] + 0.25f);
-            intensityPoints[i] = new Vector3(currentPointX, currentPointY);
-            if (i == 0)
-                slopePoints[i] = slope;
-            else
-                slopePoints[i] = Mathf.Lerp(slopePoints[i-1], slope, 0.05f);
-
-            previousPointX = currentPointX;
-            previousPointY = currentPointY;
-        }
-        splineVisualizer.SetPoints(intensityPoints, slopePoints);
-        splineVisualizer.GenerateMesh();
-
-        // Frequency visualization
-        //int frequency = 20; // 20->20000
-        //int frequencyIndex = (int)(128f / (20000 - 20) * frequency);
-        //Vector3[] bassPoints = new Vector3[frequencies.Length];
-        //for (int i = 0; i < frequencies.Length; i++)
-        //    bassPoints[i] = new Vector3(300f * i / frequencies.Length, (float)frequencies[i][frequencyIndex]);
-        //splineVisualizer2.SetPoints(bassPoints);
-
-        audioSource.Play();
+        return intensities;
     }
 
-    void Update()
+    public static double[][] GetAudioSpectrum(AudioClip audioClip, int windowSize)
     {
-        splineVisualizer.SetCurrentTime(audioSource.time / audioSource.clip.length);
+        float[] audioData = GetAudioData(audioClip);
+        double[][] spectrum = new double[audioData.Length / windowSize][];
+
+        double[] audioDataChunk = new double[windowSize];
+        double[] spectrumChunk = new double[windowSize];
+        System.Numerics.Complex[] audioDataChunkComplex;
+        System.Numerics.Complex[] spectrumChunkComplex;
+
+        for (int i = 0; i < spectrum.Length; i++)
+        {
+            for (int j = 0; j < windowSize; j++)
+                audioDataChunk[j] = audioData[i * windowSize + j];
+
+            audioDataChunkComplex = FastFourierTransform.doubleToComplex(audioDataChunk);
+            spectrumChunkComplex = FastFourierTransform.FFT(audioDataChunkComplex, false);
+
+            for (int j = 0; j < windowSize; j++)
+                spectrumChunk[j] = spectrumChunkComplex[j].Magnitude;
+
+            spectrum[i] = new double[windowSize];
+            System.Array.Copy(spectrumChunk, spectrum[i], windowSize);
+        }
+
+        return spectrum;
     }
 }
