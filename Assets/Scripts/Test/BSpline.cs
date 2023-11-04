@@ -1,46 +1,38 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BSpline
 {
-    private Vector3[] points;
+    private List<Vector3> points;
     private float[] slopePoints;
-
-    public BSpline() { }
-
-    public BSpline(Vector3[] points)
-    {
-        this.points = points;
-    }
-
-    //void Update()
-    //{
-    //    Vector3 point = GetSplinePoint(currentTime);
-    //    Vector3 tangent = GetSplineTangent(currentTime);
-    //    Camera.main.transform.position = point + Vector3.up - Vector3.right * 5;
-    //    Camera.main.transform.forward = Vector3.Lerp(Camera.main.transform.forward, tangent, 2.5f * Time.deltaTime);
-    //    spaceship.position = point;
-    //    spaceship.forward = Vector3.Lerp(spaceship.forward, tangent, 2.5f * Time.deltaTime);
-    //}
 
     public void SetPoints(Vector3[] points, float[] slopePoints)
     {
-        this.points = points;
+        this.points = points.ToList<Vector3>();
+
+        // BSpline correction including first and last point
+        Vector3 firstPoint = points[0];
+        Vector3 lastPoint = points[^1];
+
+        this.points.Insert(0, firstPoint);
+        this.points.Insert(0, firstPoint);
+        this.points.Add(lastPoint);
+        this.points.Add(lastPoint);
+
         this.slopePoints = slopePoints;
     }
 
     public Vector3 GetSplinePoint(float t)
     {
-        int u = Mathf.Min((int)(t * points.Length), points.Length - 4);
-        float interpolator = t * points.Length % 1;
-        return GetPointOnSubSpline(interpolator, points[u], points[u + 1], points[u + 2], points[u + 3]);
+        GetSplineIndexes(in t, out int u, out float inter);
+        return GetPointOnSubSpline(inter, points[u], points[u + 1], points[u + 2], points[u + 3]);
     }
 
     public Vector3 GetSplineTangent(float t)
     {
-        int u = (int)(t * points.Length);
-        float interpolator = t * points.Length % 1;
-        return GetTangentOnSubSpline(interpolator, points[u], points[u + 1], points[u + 2], points[u + 3]);
+        GetSplineIndexes(in t, out int u, out float inter);
+        return GetTangentOnSubSpline(inter, points[u], points[u + 1], points[u + 2], points[u + 3]);
     }
 
     public Mesh GetSplineMesh(int resolution, float thickness, Vector3 bitangent)
@@ -95,6 +87,13 @@ public class BSpline
         mesh.RecalculateNormals();
 
         return mesh;
+    }
+
+    private void GetSplineIndexes(in float t, out int u, out float inter)
+    {
+        float lerp = Mathf.Lerp(0, points.Count - 3, t);
+        u = (int)lerp;
+        inter = lerp % 1;
     }
 
     private Vector3 GetPointOnSubSpline(float t, Vector3 p1, Vector3 p2, Vector3 p3, Vector3 p4)
