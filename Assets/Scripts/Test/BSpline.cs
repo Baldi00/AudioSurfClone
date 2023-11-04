@@ -48,8 +48,9 @@ public class BSpline
 
         // Create first verts
         Vector3 curvePoint = GetSplinePoint(0);
-        verts.Add(curvePoint + bitangent * thickness); //	Vert 0
-        verts.Add(curvePoint - bitangent * thickness); //	Vert 1
+
+        verts.Add(curvePoint + GetBitangentPerpendicularToTangent(0, bitangent) * thickness); // Vert 0
+        verts.Add(curvePoint - GetBitangentPerpendicularToTangent(0, bitangent) * thickness); // Vert 1
 
         //colors.Add(Color.HSVToRGB(Mathf.Lerp(0f, 0.83f, Mathf.InverseLerp(-0.1f, 0.5f, Mathf.Lerp(slopePoints[u], slopePoints[u + 1], 0))), 1, 0.8f));
         //colors.Add(Color.HSVToRGB(Mathf.Lerp(0f, 0.83f, Mathf.InverseLerp(-0.1f, 0.5f, Mathf.Lerp(slopePoints[u], slopePoints[u + 1], 0))), 1, 0.8f));
@@ -62,8 +63,9 @@ public class BSpline
             Vector3 currentPoint = GetSplinePoint(tStep * i);
 
             // Add verts
-            verts.Add(currentPoint + bitangent * thickness); // Vert 2*i
-            verts.Add(currentPoint - bitangent * thickness); // Vert 2*i + 1
+
+            verts.Add(currentPoint + GetBitangentPerpendicularToTangent(tStep * i, bitangent) * thickness); // Vert 2*i
+            verts.Add(currentPoint - GetBitangentPerpendicularToTangent(tStep * i, bitangent) * thickness); // Vert 2*i + 1
 
             // Add vertex color
             //colors.Add(Color.HSVToRGB(Mathf.Lerp(0f, 0.83f, Mathf.InverseLerp(-0.1f, 0.5f, Mathf.Lerp(slopePoints[u], slopePoints[u + 1], tStep * i))), 1, 0.8f));
@@ -94,6 +96,13 @@ public class BSpline
         float lerp = Mathf.Lerp(0, points.Count - 3, t);
         u = (int)lerp;
         inter = lerp % 1;
+    }
+
+    private Vector3 GetBitangentPerpendicularToTangent(float t, Vector3 bitangent)
+    {
+        Vector3 tangent = GetSplineTangent(t).normalized;
+        Vector3 projection = Vector3.Project(bitangent.normalized, tangent);
+        return (bitangent.normalized - projection).normalized;
     }
 
     private Vector3 GetPointOnSubSpline(float t, Vector3 p1, Vector3 p2, Vector3 p3, Vector3 p4)
