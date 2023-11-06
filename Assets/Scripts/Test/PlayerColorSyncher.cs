@@ -6,7 +6,11 @@ public class PlayerColorSyncher : MonoBehaviour, IColorSynchable
     [SerializeField]
     private MeshRenderer spaceshipRenderer;
     [SerializeField]
+    private Light spaceshipLight;
+    [SerializeField]
     private List<int> materialsToUpdateIndexes;
+    [SerializeField]
+    private Material rocketFireMaterial;
 
     // Cache
     private List<Material> spaceshipMaterials;
@@ -14,7 +18,7 @@ public class PlayerColorSyncher : MonoBehaviour, IColorSynchable
     void Awake()
     {
         spaceshipMaterials = new List<Material>();
-        spaceshipRenderer.GetMaterials(spaceshipMaterials);
+        spaceshipRenderer.GetSharedMaterials(spaceshipMaterials);
     }
 
     public void SyncColor(Color color)
@@ -22,5 +26,8 @@ public class PlayerColorSyncher : MonoBehaviour, IColorSynchable
         for (int i = 0; i < spaceshipMaterials.Count; i++)
             if (materialsToUpdateIndexes.Contains(i))
                 spaceshipMaterials[i].SetColor("_EmissionColor", color);
+
+        spaceshipLight.color = color;
+        rocketFireMaterial.SetColor("_EmissionColor", color);
     }
 }

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -37,9 +36,10 @@ public class GameManager : MonoBehaviour
 
         selectFileUi.SetActive(false);
         GameObject player = Instantiate(playerPrefab);
-        PlayerMover playerMover = player.GetComponent<PlayerMover>();
+        PlayerController playerController = player.GetComponent<PlayerController>();
+        playerController.SetNormalizedIntensities(trackManager.GetNormalizedIntensities());
+        playerController.StartFollowingTrack(trackSpline, audioSource);
         PlayerColorSyncher playerColorSyncher = player.GetComponent<PlayerColorSyncher>();
-        playerMover.StartFollowingTrack(trackSpline, audioSource);
         colorSyncher.AddColorSynchable(playerColorSyncher);
 
         colorSyncher.enabled = true;

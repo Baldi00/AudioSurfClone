@@ -23,6 +23,8 @@ public class TrackManager : MonoBehaviour
     private MeshFilter meshFilter;
     private BSpline trackSpline;
 
+    private float[] normalizedIntensities;
+
     void Awake()
     {
         trackSpline = new BSpline();
@@ -34,10 +36,16 @@ public class TrackManager : MonoBehaviour
         return trackSpline;
     }
 
+    public float[] GetNormalizedIntensities()
+    {
+        return normalizedIntensities;
+    }
+
     public void GenerateTrack(AudioClip audioClip, int windowSize)
     {
         float[] intensities = AudioAnalyzer.GetAudioIntensities(audioClip, windowSize);
 
+        normalizedIntensities = new float[intensities.Length];
         Vector3[] intensityPoints = new Vector3[intensities.Length];
         Color[] colors = new Color[intensities.Length];
         float previousPointX = 0;
@@ -55,6 +63,7 @@ public class TrackManager : MonoBehaviour
         for (int i = 1; i < slopes.Length; i++)
         {
             intensities[i] = Mathf.InverseLerp(0, maxIntensity, intensities[i]);
+            normalizedIntensities[i] = intensities[i];
             slopes[i] = Mathf.Lerp(slopes[i - 1], intensities[i], 1 - slopeSmoothness);
             if (maxSlope < slopes[i])
                 maxSlope = slopes[i];

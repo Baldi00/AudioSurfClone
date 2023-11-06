@@ -116,7 +116,7 @@ public class BSpline
         return (bitangent.normalized - projection).normalized;
     }
 
-    private void GetSplineIndexes(in float t, out int u, out float inter)
+    public void GetSplineIndexes(in float t, out int u, out float inter)
     {
         float lerp = Mathf.Lerp(0, points.Count - 3, t);
         u = (int)lerp;
