@@ -11,13 +11,11 @@ public class GameManager : MonoBehaviour
     private FileBrowser fileBrowser;
     [SerializeField]
     private TrackManager trackManager;
-    [SerializeField]
-    private List<OnTrackMover> onTrackMovers;
 
     [SerializeField]
     private GameObject selectFileUi;
     [SerializeField]
-    private GameObject gameScene;
+    private GameObject playerPrefab;
 
     void Awake()
     {
@@ -34,11 +32,11 @@ public class GameManager : MonoBehaviour
         yield return StartCoroutine(AudioLoader.LoadAudio("file:\\\\" + songPath, audioSource));
         
         trackManager.GenerateTrack(audioSource.clip, 4096);
-        onTrackMovers.ForEach(mover => mover.StartFollowingTrack(trackManager.GetTrackSpline(), audioSource));
 
         selectFileUi.SetActive(false);
-        gameScene.SetActive(true);
-        
+        PlayerMover playerMover = Instantiate(playerPrefab).GetComponent<PlayerMover>();
+        playerMover.StartFollowingTrack(trackManager.GetTrackSpline(), audioSource);
+
         audioSource.Play();
     }
 }

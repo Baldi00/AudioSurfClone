@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class OnTrackMover : MonoBehaviour
+public class PlayerMover : MonoBehaviour
 {
     [SerializeField]
     private Vector3 positionOffset;
@@ -29,6 +29,10 @@ public class OnTrackMover : MonoBehaviour
     {
         this.trackSpline = trackSpline;
         this.audioSource = audioSource;
+        
+        transform.position = trackSpline.GetSplinePoint(0) + positionOffset;
+        transform.forward = Vector3.right;
+        
         followTrack = true;
     }
 
