@@ -33,7 +33,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3268143590544987337}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 15, y: 0, z: 0}
 --- !u!20 &330585545
 Camera:
@@ -131,8 +131,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62867e9706909e44bb3bac38a286461a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  positionOffset: {x: -7.5, y: 1, z: 0}
   rotationToTangentSmoothness: 2.5
+  mouseSpeed: 3
+  maxInputOffset: 5
 --- !u!1 &1947679310
 GameObject:
   m_ObjectHideFlags: 0
@@ -163,7 +164,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3268143590544987337}
+  m_Father: {fileID: 1905209885520230355}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 180, y: 0, z: 0}
 --- !u!108 &1947679313
@@ -260,7 +261,7 @@ GameObject:
   - component: {fileID: 6977817745698535730}
   - component: {fileID: 1571824091723949549}
   m_Layer: 0
-  m_Name: Spaceship
+  m_Name: SpaceshipRenderer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -273,14 +274,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2403828971957911878}
-  m_LocalRotation: {x: 0.5, y: -0.5, z: -0.5, w: -0.5}
-  m_LocalPosition: {x: 0, y: 0.228, z: 0}
+  m_LocalRotation: {x: -0.5, y: 0.5, z: 0.5, w: 0.5}
+  m_LocalPosition: {x: 0, y: 0.22800002, z: 0}
   m_LocalScale: {x: 6.5, y: 6.5, z: 6.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
-  m_Father: {fileID: 3268143590544987337}
+  m_Father: {fileID: 1905209885520230355}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 90}
 --- !u!33 &6977817745698535730
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -367,8 +368,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1813650845399142316}
-  - {fileID: 1947679311}
+  - {fileID: 1905209885520230355}
   - {fileID: 330585546}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -385,5 +385,60 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62867e9706909e44bb3bac38a286461a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  positionOffset: {x: 0, y: 0, z: 0}
   rotationToTangentSmoothness: 2.5
+  mouseSpeed: 75
+  maxInputOffset: 3
+--- !u!1 &4781857381444483496
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1905209885520230355}
+  - component: {fileID: 9107318672441797600}
+  m_Layer: 0
+  m_Name: Spaceship
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1905209885520230355
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4781857381444483496}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1813650845399142316}
+  - {fileID: 1947679311}
+  m_Father: {fileID: 3268143590544987337}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9107318672441797600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4781857381444483496}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 224bbbd97f488e6419a350e10180c9ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  positionOffset: {x: 0, y: 0.1, z: 0}
+  pitchAmplitude: 10
+  pitchFrequency: 1
+  floatingAmplitude: 0.2
+  floatingFrequency: 5
+  rollMultiplier: 30000
+  maxRoll: 30
+  rollSmoothing: 0.975

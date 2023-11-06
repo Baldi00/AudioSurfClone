@@ -347,7 +347,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trackMeshResolution: 8192
-  trackMeshThickness: 3.5
+  trackMeshThickness: 4
   trackMeshBitangent: {x: 0, y: 0, z: 1}
   slopeSmoothness: 0.9
   slopeIntensity: 1

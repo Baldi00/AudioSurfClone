@@ -56,7 +56,7 @@ public class TrackManager : MonoBehaviour
         for (int i = 1; i < slopes.Length; i++)
         {
             intensities[i] = Mathf.InverseLerp(0, maxIntensity, intensities[i]);
-            slopes[i] = Mathf.Lerp(slopes[i - 1], intensities[i], 1-slopeSmoothness);
+            slopes[i] = Mathf.Lerp(slopes[i - 1], intensities[i], 1 - slopeSmoothness);
             if (maxSlope < slopes[i])
                 maxSlope = slopes[i];
         }

@@ -91,18 +91,18 @@ public class BSpline
         return mesh;
     }
 
+    public Vector3 GetBitangentPerpendicularToTangent(float t, Vector3 bitangent)
+    {
+        Vector3 tangent = GetSplineTangent(t).normalized;
+        Vector3 projection = Vector3.Project(bitangent.normalized, tangent);
+        return (bitangent.normalized - projection).normalized;
+    }
+
     private void GetSplineIndexes(in float t, out int u, out float inter)
     {
         float lerp = Mathf.Lerp(0, points.Count - 3, t);
         u = (int)lerp;
         inter = lerp % 1;
-    }
-
-    private Vector3 GetBitangentPerpendicularToTangent(float t, Vector3 bitangent)
-    {
-        Vector3 tangent = GetSplineTangent(t).normalized;
-        Vector3 projection = Vector3.Project(bitangent.normalized, tangent);
-        return (bitangent.normalized - projection).normalized;
     }
 
     private Vector3 GetPointOnSubSpline(float t, Vector3 p1, Vector3 p2, Vector3 p3, Vector3 p4)
