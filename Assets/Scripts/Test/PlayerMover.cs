@@ -12,19 +12,24 @@ public class PlayerMover : MonoBehaviour
     private bool followTrack;
 
     // Cache
-    private AudioSource audioSource;
+    private GameManager gameManager;
     private float currentAudioTimePercentage;
     private Vector3 currentPoint, currentTangent;
     private BSpline trackSpline;
     private float currentPlayerInputX;
     private Vector3 currentInputOffset;
 
+    void Awake()
+    {
+        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+    }
+
     void Update()
     {
         if (!followTrack)
             return;
 
-        currentAudioTimePercentage = GetCurrentAudioTimePercentage();
+        currentAudioTimePercentage = gameManager.GetCurrentAudioTimePercentage();
 
         // Get Input
         currentPlayerInputX = -Input.GetAxis("Mouse X") * Time.deltaTime * mouseSpeed;
@@ -41,16 +46,10 @@ public class PlayerMover : MonoBehaviour
     public void StartFollowingTrack(BSpline trackSpline, AudioSource audioSource)
     {
         this.trackSpline = trackSpline;
-        this.audioSource = audioSource;
 
         transform.position = trackSpline.GetSplinePoint(0);
         transform.forward = Vector3.right;
 
         followTrack = true;
-    }
-
-    private float GetCurrentAudioTimePercentage()
-    {
-        return audioSource.time / audioSource.clip.length;
     }
 }

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Events;
 
 [RequireComponent(typeof(MeshFilter))]
 public class TrackManager : MonoBehaviour
@@ -92,14 +91,4 @@ public class TrackManager : MonoBehaviour
             frequencyPoints[i] = new Vector3(300f * i / spectrum.Length, (float)spectrum[i][frequencyIndex]);
         // Spline visualization
     }
-
-
-    public AudioSource audioSourceDebug;
-
-    [ContextMenu("Generate")]
-    public void GenerateTrack()
-    {
-        GenerateTrack(audioSourceDebug.clip, 4096);
-    }
-
 }

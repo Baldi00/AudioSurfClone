@@ -353,7 +353,6 @@ MonoBehaviour:
   slopeIntensity: 1
   minSpeed: 0.1
   maxSpeed: 5
-  audioSourceDebug: {fileID: 350832207}
 --- !u!1 &338677363
 GameObject:
   m_ObjectHideFlags: 0
@@ -1248,9 +1247,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1649067788}
   - component: {fileID: 1649067787}
+  - component: {fileID: 1649067789}
   m_Layer: 0
   m_Name: GameManager
-  m_TagString: Untagged
+  m_TagString: GameManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1273,6 +1273,7 @@ MonoBehaviour:
   selectFileUi: {fileID: 1806092574}
   playerPrefab: {fileID: 2742999946798501491, guid: 883353ef6d9d8e948bc3fda07b3e6226,
     type: 3}
+  colorSyncher: {fileID: 1649067789}
 --- !u!4 &1649067788
 Transform:
   m_ObjectHideFlags: 0
@@ -1288,6 +1289,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1649067789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1649067786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdc349236018d324c84394065469d9bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1695876527
 GameObject:
   m_ObjectHideFlags: 0

@@ -349,6 +349,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3268143590544987337}
   - component: {fileID: 1668160598}
+  - component: {fileID: 4484332075916799825}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -388,6 +389,20 @@ MonoBehaviour:
   rotationToTangentSmoothness: 2.5
   mouseSpeed: 75
   maxInputOffset: 3
+--- !u!114 &4484332075916799825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2742999946798501491}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dce08915597f274469d632e34d1ecfda, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spaceshipRenderer: {fileID: 1571824091723949549}
+  materialsToUpdateIndexes: 000000000200000003000000040000000500000006000000
 --- !u!1 &4781857381444483496
 GameObject:
   m_ObjectHideFlags: 0
