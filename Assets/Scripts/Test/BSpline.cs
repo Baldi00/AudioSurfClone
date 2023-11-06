@@ -118,7 +118,7 @@ public class BSpline
 
     public void GetSplineIndexes(in float t, out int u, out float inter)
     {
-        float lerp = Mathf.Lerp(0, points.Count - 3, t);
+        float lerp = Mathf.Lerp(0, points.Count - 4, t);
         u = (int)lerp;
         inter = lerp % 1;
     }
