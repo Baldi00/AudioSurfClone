@@ -11,6 +11,16 @@ public class TrackManager : MonoBehaviour
     [SerializeField]
     private Vector3 trackMeshBitangent = Vector3.forward;
 
+    [SerializeField, Range(0.001f, 0.999f)]
+    private float slopeSmoothness = 0.925f;
+    [SerializeField]
+    private float slopeIntensity = 0.5f;
+
+    [SerializeField]
+    private float minSpeed = 0.3f;
+    [SerializeField]
+    private float maxSpeed = 3f;
+
     private MeshFilter meshFilter;
     private BSpline trackSpline;
 
@@ -34,17 +44,38 @@ public class TrackManager : MonoBehaviour
         float previousPointX = 0;
         float previousPointY = 0;
 
+        float maxIntensity = 0;
+
+        for (int i = 0; i < intensities.Length; i++)
+            if (maxIntensity < intensities[i])
+                maxIntensity = intensities[i];
+
+        float[] slopes = new float[intensities.Length];
+        slopes[0] = 0;
+        float maxSlope = 0;
+        for (int i = 1; i < slopes.Length; i++)
+        {
+            intensities[i] = Mathf.InverseLerp(0, maxIntensity, intensities[i]);
+            slopes[i] = Mathf.Lerp(slopes[i - 1], intensities[i], 1-slopeSmoothness);
+            if (maxSlope < slopes[i])
+                maxSlope = slopes[i];
+        }
+
+        for (int i = 0; i < slopes.Length; i++)
+        {
+            slopes[i] = Mathf.Lerp(slopeIntensity, -slopeIntensity, Mathf.InverseLerp(0, maxSlope, slopes[i]));
+        }
+
         for (int i = 0; i < intensities.Length; i++)
         {
-            float slope = Mathf.Lerp(0.5f, -0.5f, Mathf.InverseLerp(0, 0.5f, intensities[i]));
-            float speedInv = Mathf.Lerp(0.3f, 3f, Mathf.InverseLerp(0, 0.5f, intensities[i]));
+            float speedInv = Mathf.Lerp(minSpeed, maxSpeed, intensities[i]);
             float currentPointX = previousPointX + speedInv;
-            float currentPointY = previousPointY + slope * (intensities[i] + 0.25f);
+            float currentPointY = previousPointY + slopes[i] * speedInv;
             intensityPoints[i] = new Vector3(currentPointX, currentPointY);
-            if (i == 0)
-                slopePoints[i] = slope;
-            else
-                slopePoints[i] = Mathf.Lerp(slopePoints[i - 1], slope, 0.05f);
+            //if (i == 0)
+            //    slopePoints[i] = slope;
+            //else
+            //    slopePoints[i] = Mathf.Lerp(slopePoints[i - 1], slope, 0.05f);
 
             previousPointX = currentPointX;
             previousPointY = currentPointY;
@@ -63,4 +94,14 @@ public class TrackManager : MonoBehaviour
             frequencyPoints[i] = new Vector3(300f * i / spectrum.Length, (float)spectrum[i][frequencyIndex]);
         // Spline visualization
     }
+
+
+    public AudioSource audioSourceDebug;
+
+    [ContextMenu("Generate")]
+    public void GenerateTrack()
+    {
+        GenerateTrack(audioSourceDebug.clip, 4096);
+    }
+
 }
