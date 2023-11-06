@@ -40,7 +40,7 @@ public class TrackManager : MonoBehaviour
         float[] intensities = AudioAnalyzer.GetAudioIntensities(audioClip, windowSize);
 
         Vector3[] intensityPoints = new Vector3[intensities.Length];
-        float[] slopePoints = new float[intensities.Length];
+        Color[] colors = new Color[intensities.Length];
         float previousPointX = 0;
         float previousPointY = 0;
 
@@ -63,6 +63,7 @@ public class TrackManager : MonoBehaviour
 
         for (int i = 0; i < slopes.Length; i++)
         {
+            colors[i] = Color.HSVToRGB(Mathf.Clamp01(Mathf.Lerp(-0.2f, 0.83f, Mathf.InverseLerp(maxSlope, 0, slopes[i]))), 1f, 0.8f);
             slopes[i] = Mathf.Lerp(slopeIntensity, -slopeIntensity, Mathf.InverseLerp(0, maxSlope, slopes[i]));
         }
 
@@ -72,16 +73,13 @@ public class TrackManager : MonoBehaviour
             float currentPointX = previousPointX + speedInv;
             float currentPointY = previousPointY + slopes[i] * speedInv;
             intensityPoints[i] = new Vector3(currentPointX, currentPointY);
-            //if (i == 0)
-            //    slopePoints[i] = slope;
-            //else
-            //    slopePoints[i] = Mathf.Lerp(slopePoints[i - 1], slope, 0.05f);
 
             previousPointX = currentPointX;
             previousPointY = currentPointY;
         }
 
-        trackSpline.SetPoints(intensityPoints, slopePoints);
+        trackSpline.SetPoints(intensityPoints);
+        trackSpline.SetColors(colors);
         meshFilter.mesh = trackSpline.GetSplineMesh(trackMeshResolution, trackMeshThickness, trackMeshBitangent);
     }
 

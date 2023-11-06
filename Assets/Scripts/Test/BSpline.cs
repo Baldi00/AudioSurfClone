@@ -5,9 +5,9 @@ using UnityEngine;
 public class BSpline
 {
     private List<Vector3> points;
-    private float[] slopePoints;
+    private List<Color> colors;
 
-    public void SetPoints(Vector3[] points, float[] slopePoints)
+    public void SetPoints(Vector3[] points)
     {
         this.points = points.ToList<Vector3>();
 
@@ -19,8 +19,20 @@ public class BSpline
         this.points.Insert(0, firstPoint);
         this.points.Add(lastPoint);
         this.points.Add(lastPoint);
+    }
 
-        this.slopePoints = slopePoints;
+    public void SetColors(Color[] colors)
+    {
+        this.colors = colors.ToList<Color>();
+
+        // BSpline correction including first and last point
+        Color firstPoint = colors[0];
+        Color lastPoint = colors[^1];
+
+        this.colors.Insert(0, firstPoint);
+        this.colors.Insert(0, firstPoint);
+        this.colors.Add(lastPoint);
+        this.colors.Add(lastPoint);
     }
 
     public Vector3 GetSplinePoint(float t)
@@ -35,6 +47,12 @@ public class BSpline
         return GetTangentOnSubSpline(inter, points[u], points[u + 1], points[u + 2], points[u + 3]);
     }
 
+    public Color GetSplineColor(float t)
+    {
+        GetSplineIndexes(in t, out int u, out float inter);
+        return Color.Lerp(colors[u], colors[u + 1], inter);
+    }
+
     public Mesh GetSplineMesh(int resolution, float thickness, Vector3 bitangent)
     {
         var mesh = new Mesh();
@@ -44,7 +62,7 @@ public class BSpline
         var verts = new List<Vector3>();
         var tris = new List<int>();
         var uvs = new List<Vector2>();
-        //var colors = new List<Color>();
+        var vertexColors = new List<Color>();
 
         // Create first verts
         Vector3 curvePoint = GetSplinePoint(0);
@@ -52,8 +70,8 @@ public class BSpline
         verts.Add(curvePoint + GetBitangentPerpendicularToTangent(0, bitangent) * thickness); // Vert 0
         verts.Add(curvePoint - GetBitangentPerpendicularToTangent(0, bitangent) * thickness); // Vert 1
 
-        //colors.Add(Color.HSVToRGB(Mathf.Lerp(0f, 0.83f, Mathf.InverseLerp(-0.1f, 0.5f, Mathf.Lerp(slopePoints[u], slopePoints[u + 1], 0))), 1, 0.8f));
-        //colors.Add(Color.HSVToRGB(Mathf.Lerp(0f, 0.83f, Mathf.InverseLerp(-0.1f, 0.5f, Mathf.Lerp(slopePoints[u], slopePoints[u + 1], 0))), 1, 0.8f));
+        vertexColors.Add(GetSplineColor(0));
+        vertexColors.Add(GetSplineColor(0));
 
         uvs.Add(new Vector2(0, 1));
         uvs.Add(new Vector2(0, 0));
@@ -68,8 +86,8 @@ public class BSpline
             verts.Add(currentPoint - GetBitangentPerpendicularToTangent(tStep * i, bitangent) * thickness); // Vert 2*i + 1
 
             // Add vertex color
-            //colors.Add(Color.HSVToRGB(Mathf.Lerp(0f, 0.83f, Mathf.InverseLerp(-0.1f, 0.5f, Mathf.Lerp(slopePoints[u], slopePoints[u + 1], tStep * i))), 1, 0.8f));
-            //colors.Add(Color.HSVToRGB(Mathf.Lerp(0f, 0.83f, Mathf.InverseLerp(-0.1f, 0.5f, Mathf.Lerp(slopePoints[u], slopePoints[u + 1], tStep * i))), 1, 0.8f));
+            vertexColors.Add(GetSplineColor(tStep * i));
+            vertexColors.Add(GetSplineColor(tStep * i));
 
             // Add uvs
             uvs.Add(new Vector2(tStep * i, 1));
@@ -85,7 +103,7 @@ public class BSpline
         mesh.vertices = verts.ToArray();
         mesh.triangles = tris.ToArray();
         mesh.uv = uvs.ToArray();
-        //mesh.colors = colors.ToArray();
+        mesh.colors = vertexColors.ToArray();
         mesh.RecalculateNormals();
 
         return mesh;
