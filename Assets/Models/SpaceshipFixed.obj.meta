@@ -1,52 +1,9 @@
 fileFormatVersion: 2
-guid: 31b46bb0adfe0ed478930170c9bc9ce8
+guid: fa5ab769d190713449af111341071f83
 ModelImporter:
   serializedVersion: 21300
-  internalIDToNameTable:
-  - first:
-      74: -3999578356269874737
-    second: Cube|CubeAction
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Blue body
-    second: {fileID: 2100000, guid: f30195dfb3764cb4082c36552f54ecb3, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: glass
-    second: {fileID: 2100000, guid: 1eda4b70dc72afe4d8150dea70e28087, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: golden emit
-    second: {fileID: 2100000, guid: 91dc50740fc217840963192eb180de91, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: side_
-    second: {fileID: 2100000, guid: 366d4a69e99a11e429aceb8962d8ee83, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: silver metal
-    second: {fileID: 2100000, guid: 19ee6ae646650954ea2dbf13e288d171, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: uper thruster
-    second: {fileID: 2100000, guid: 3acab00ee612a044982b005483e91dbc, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: weapon
-    second: {fileID: 2100000, guid: 2c77bc50d07ff1a4f9b013b882f4893e, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: yellow emit
-    second: {fileID: 2100000, guid: 2d773a408b8c36c498d83a11c16e3979, type: 2}
+  internalIDToNameTable: []
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -85,8 +42,8 @@ ModelImporter:
     sortHierarchyByName: 1
     importVisibility: 1
     importBlendShapes: 1
-    importCameras: 0
-    importLights: 0
+    importCameras: 1
+    importLights: 1
     nodeNameCollisionStrategy: 1
     fileIdsGeneration: 2
     swapUVChannels: 0
