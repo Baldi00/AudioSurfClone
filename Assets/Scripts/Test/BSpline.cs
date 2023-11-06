@@ -76,22 +76,26 @@ public class BSpline
         uvs.Add(new Vector2(0, 1));
         uvs.Add(new Vector2(0, 0));
 
+        float lastVertex1x = (GetSplinePoint(1) + GetBitangentPerpendicularToTangent(1, bitangent) * thickness).x;
+        float lastVertex2x = (GetSplinePoint(1) - GetBitangentPerpendicularToTangent(1, bitangent) * thickness).x;
+
         for (int i = 1; i < resolution; i++)
         {
             Vector3 currentPoint = GetSplinePoint(tStep * i);
 
             // Add verts
-
-            verts.Add(currentPoint + GetBitangentPerpendicularToTangent(tStep * i, bitangent) * thickness); // Vert 2*i
-            verts.Add(currentPoint - GetBitangentPerpendicularToTangent(tStep * i, bitangent) * thickness); // Vert 2*i + 1
+            Vector3 vertex1 = currentPoint + GetBitangentPerpendicularToTangent(tStep * i, bitangent) * thickness;
+            Vector3 vertex2 = currentPoint - GetBitangentPerpendicularToTangent(tStep * i, bitangent) * thickness;
+            verts.Add(vertex1); // Vert 2*i
+            verts.Add(vertex2); // Vert 2*i + 1
 
             // Add vertex color
             vertexColors.Add(GetSplineColor(tStep * i));
             vertexColors.Add(GetSplineColor(tStep * i));
 
             // Add uvs
-            uvs.Add(new Vector2(tStep * i, 1));
-            uvs.Add(new Vector2(tStep * i, 0));
+            uvs.Add(new Vector2(vertex1.x / lastVertex1x, 1));
+            uvs.Add(new Vector2(vertex2.x / lastVertex2x, 0));
 
             // Add tris
             int vertOffset = 2 + 2 * (i - 1);
