@@ -89,6 +89,8 @@ public class TrackManager : MonoBehaviour
         trackSpline.SetPoints(intensityPoints);
         trackSpline.SetColors(colors);
         meshFilter.mesh = trackSpline.GetSplineMesh(trackMeshResolution, trackMeshThickness, trackMeshBitangent);
+
+        GetComponent<MeshRenderer>().material.SetFloat("_LineSubdivisions", 3000f * audioClip.length / 160f);
     }
 
     private void VisualizeAudioSpectrum(AudioClip audioClip, int frequency, int windowSize)
