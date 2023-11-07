@@ -13,7 +13,9 @@ public class TrackManager : MonoBehaviour
     [SerializeField, Range(0.001f, 0.999f)]
     private float slopeSmoothness = 0.925f;
     [SerializeField]
-    private float slopeIntensity = 0.5f;
+    private float minSlopeIntensity = 0.6f;
+    [SerializeField]
+    private float maxSlopeIntensity = 1.2f;
 
     [SerializeField]
     private float minSpeed = 0.3f;
@@ -60,14 +62,18 @@ public class TrackManager : MonoBehaviour
         float[] slopes = new float[intensities.Length];
         slopes[0] = 0;
         float maxSlope = 0;
+        int highIntensitiesCount = 0;
         for (int i = 1; i < slopes.Length; i++)
         {
             intensities[i] = Mathf.InverseLerp(0, maxIntensity, intensities[i]);
+            highIntensitiesCount += intensities[i] > 0.5f ? 1 : 0;
             normalizedIntensities[i] = intensities[i];
             slopes[i] = Mathf.Lerp(slopes[i - 1], intensities[i], 1 - slopeSmoothness);
             if (maxSlope < slopes[i])
                 maxSlope = slopes[i];
         }
+
+        float slopeIntensity = Mathf.Lerp(minSlopeIntensity, maxSlopeIntensity, (float)highIntensitiesCount / intensities.Length);
 
         for (int i = 0; i < slopes.Length; i++)
         {
