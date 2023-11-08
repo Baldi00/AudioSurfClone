@@ -32,24 +32,27 @@ public class FileBrowser : MonoBehaviour
 
         if (currentPath != "C:\\")
         {
-            GameObject backDir = Instantiate(buttonPrefab, buttonsContainer.transform);
-            backDir.GetComponent<Button>().onClick.AddListener(() => UpdateCurrentPath(currentPath[..currentPath.LastIndexOf("\\")]));
-            backDir.GetComponentInChildren<Text>().text = "..";
+            SelectFileButton backDir = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
+            backDir.SetButtonType(SelectFileButton.SelectButtonType.DIRECTORY);
+            backDir.SetInnerText("..Back");
+            backDir.AddListener(() => UpdateCurrentPath(currentPath[..currentPath.LastIndexOf("\\")]));
         }
 
         foreach (string dir in Directory.GetDirectories(currentPath))
         {
-            GameObject nextDir = Instantiate(buttonPrefab, buttonsContainer.transform);
-            nextDir.GetComponent<Button>().onClick.AddListener(() => UpdateCurrentPath(Path.Combine(currentPath, dir)));
-            nextDir.GetComponentInChildren<Text>().text = dir.Substring(dir.LastIndexOf("\\") + 1);
+            SelectFileButton nextDir = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
+            nextDir.SetButtonType(SelectFileButton.SelectButtonType.DIRECTORY);
+            nextDir.SetInnerText(dir[(dir.LastIndexOf("\\") + 1)..]);
+            nextDir.AddListener(() => UpdateCurrentPath(Path.Combine(currentPath, dir)));
         }
         foreach (string file in Directory.GetFiles(currentPath))
         {
             if (file.EndsWith(".mp3") || file.EndsWith(".wav"))
             {
-                GameObject nextFile = Instantiate(buttonPrefab, buttonsContainer.transform);
-                nextFile.GetComponent<Button>().onClick.AddListener(() => onAudioFileSelected.Invoke(Path.Combine(currentPath, file)));
-                nextFile.GetComponentInChildren<Text>().text = file.Substring(file.LastIndexOf("\\") + 1);
+                SelectFileButton nextFile = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
+                nextFile.SetButtonType(SelectFileButton.SelectButtonType.FILE);
+                nextFile.SetInnerText(file[(file.LastIndexOf("\\") + 1)..].Replace(".mp3", "").Replace(".wav", ""));
+                nextFile.AddListener(() => onAudioFileSelected.Invoke(Path.Combine(currentPath, file)));
             }
         }
     }
