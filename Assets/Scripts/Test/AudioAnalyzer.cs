@@ -33,7 +33,6 @@ public class AudioAnalyzer : MonoBehaviour
 
         double[] audioDataChunk = new double[windowSize];
         double[] spectrumChunk = new double[windowSize];
-        System.Numerics.Complex[] audioDataChunkComplex;
         System.Numerics.Complex[] spectrumChunkComplex;
 
         for (int i = 0; i < spectrum.Length; i++)
@@ -41,8 +40,7 @@ public class AudioAnalyzer : MonoBehaviour
             for (int j = 0; j < windowSize; j++)
                 audioDataChunk[j] = audioData[i * windowSize + j];
 
-            audioDataChunkComplex = FastFourierTransform.doubleToComplex(audioDataChunk);
-            spectrumChunkComplex = FastFourierTransform.FFT(audioDataChunkComplex, false);
+            spectrumChunkComplex = FastFourierTransform.FFT(audioDataChunk, false);
 
             for (int j = 0; j < windowSize; j++)
                 spectrumChunk[j] = spectrumChunkComplex[j].Magnitude;

@@ -13,6 +13,7 @@ public class FastFourierTransform : MonoBehaviour
     //the FFT returns a complex array of numbers given a input array of complex numbers.
     public static Complex[] FFT(Complex[] input, bool invert)
     {
+
         //in case there is only one element
         if (input.Length == 1)
         {
@@ -21,7 +22,7 @@ public class FastFourierTransform : MonoBehaviour
 
         //for more elements we need to otain the lenght of the input data stream
         int length = input.Length;
-        
+
         //half will be the half of the lenght
         int half = length / 2;
 
@@ -36,8 +37,22 @@ public class FastFourierTransform : MonoBehaviour
         {
             factorEXP = -factorEXP;
         }
-        
-        
+
+        // Define the Blackman-Harris window
+        double[] blackmanHarrisWindow = new double[length];
+        for (int n = 0; n < length; n++)
+        {
+            double w = 0.35875 - 0.48829 * Math.Cos(2.0 * Math.PI * n / (length - 1)) +
+                       0.14128 * Math.Cos(4.0 * Math.PI * n / (length - 1));
+            blackmanHarrisWindow[n] = w;
+        }
+
+        // Apply the Blackman-Harris window to the input
+        for (int i = 0; i < length; i++)
+        {
+            input[i] *= blackmanHarrisWindow[i];
+        }
+
         //
         // Cooley–Tukey algorithm. This is a divide and conquer algorithm that recursively breaks down a DFT of any composite size N = N1N2 into many smaller DFTs of sizes N1 and N2,
         // it is divided into even and odd components
@@ -72,10 +87,10 @@ public class FastFourierTransform : MonoBehaviour
         for (int k = 0; k < half; k++)
         {
             double factor_K = factorEXP * k;
-            
+
             //                     odd part   &  this is the second part that is added module 1 argument factor_k
-            Complex oddComponent = oddResult[k] * new Complex(1*Math.Cos(factor_K), 1*Math.Sin(factor_K));
-            
+            Complex oddComponent = oddResult[k] * new Complex(1 * Math.Cos(factor_K), 1 * Math.Sin(factor_K));
+
             //first part of the chart
             result[k] = evenResult[k] + oddComponent;
             //second part of the chart
@@ -86,52 +101,19 @@ public class FastFourierTransform : MonoBehaviour
         return result;
     }
 
-    public static Complex[] doubleToComplex(double[] inp)
+    public static Complex[] FFT(double[] input, bool invert)
     {
-        Complex[] outp = new Complex[inp.Length];
+        return FFT(DoubleToComplex(input), invert);
+    }
+
+    public static Complex[] DoubleToComplex(double[] input)
+    {
+        Complex[] output = new Complex[input.Length];
 
         //convert to complex number
-        for (int ii = 0; ii < inp.Length; ii++)
-        {
+        for (int i = 0; i < input.Length; i++)
+            output[i] = new Complex(input[i], 0);
 
-            outp[ii] = new Complex(inp[ii], 0);
-        }
-
-        return outp;
-    }
-
-
-    /// <summary>
-    /// maximum and minimum funtions for double arrays
-    /// </summary>
-
-    public static double MaxD(double[] inp)
-    {
-        double outp = -1e10;
-
-        for (int ii = 0; ii < inp.Length; ii++)
-        {
-            if (inp[ii] > outp)
-            {
-                outp = inp[ii];
-            }
-        }
-
-        return outp;
-    }
-
-    public static double MinD(double[] inp)
-    {
-        double outp = 1e10;
-
-        for (int ii = 0; ii < inp.Length; ii++)
-        {
-            if (inp[ii] < outp)
-            {
-                outp = inp[ii];
-            }
-        }
-
-        return outp;
+        return output;
     }
 }
