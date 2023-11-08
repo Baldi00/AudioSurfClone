@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
     private AudioSource audioSource;
 
     [SerializeField]
+    private PlayerController playerController;
+    [SerializeField]
     private FileBrowser fileBrowser;
     [SerializeField]
     private TrackManager trackManager;
@@ -17,23 +19,22 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     private GameObject selectFileUi;
-    [SerializeField]
-    private GameObject playerPrefab;
 
     [SerializeField]
     private ColorSyncher colorSyncher;
 
     private BSpline trackSpline;
-    private GameObject player;
 
     List<int> lowBeatIndexes;
 
     void Awake()
     {
         fileBrowser.AddOnAudioFileSelectedListener((songPath) => StartCoroutine(LoadAudioAndStartGame(songPath)));
+        PlayerColorSyncher playerColorSyncher = playerController.GetComponent<PlayerColorSyncher>();
+        colorSyncher.AddColorSynchable(playerColorSyncher);
+        playerController.gameObject.SetActive(false);
         colorSyncher.enabled = false;
         pauseManager.enabled = false;
-
     }
 
     void Update()
@@ -48,9 +49,7 @@ public class GameManager : MonoBehaviour
 
     public void BackToSelectMenu()
     {
-        Destroy(player);
         selectFileUi.SetActive(true);
-        colorSyncher.RemoveColorSynchables();
         colorSyncher.enabled = false;
         pauseManager.enabled = false;
     }
@@ -67,15 +66,12 @@ public class GameManager : MonoBehaviour
         trackSpline = trackManager.GetTrackSpline();
 
         selectFileUi.SetActive(false);
-        player = Instantiate(playerPrefab);
-        PlayerController playerController = player.GetComponent<PlayerController>();
         playerController.SetNormalizedIntensities(trackManager.GetNormalizedIntensities());
-        playerController.StartFollowingTrack(trackSpline, audioSource);
-        PlayerColorSyncher playerColorSyncher = player.GetComponent<PlayerColorSyncher>();
-        colorSyncher.AddColorSynchable(playerColorSyncher);
+        playerController.StartFollowingTrack(trackSpline);
 
         colorSyncher.enabled = true;
         pauseManager.enabled = true;
+        playerController.gameObject.SetActive(true);
         audioSource.Play();
     }
 

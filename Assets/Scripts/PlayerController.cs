@@ -93,7 +93,7 @@ public class PlayerController : MonoBehaviour
         });
     }
 
-    public void StartFollowingTrack(BSpline trackSpline, AudioSource audioSource)
+    public void StartFollowingTrack(BSpline trackSpline)
     {
         this.trackSpline = trackSpline;
 

@@ -11,7 +11,6 @@ public class ColorSyncher : MonoBehaviour
 
     void Awake()
     {
-        colorSynchables = new List<IColorSynchable>();
         gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
     }
 
@@ -23,6 +22,7 @@ public class ColorSyncher : MonoBehaviour
 
     public void AddColorSynchable(IColorSynchable colorSynchable)
     {
+        colorSynchables ??= new List<IColorSynchable>();
         colorSynchables.Add(colorSynchable);
     }
 
