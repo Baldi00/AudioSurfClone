@@ -22,6 +22,13 @@ public class SelectFileButton : MonoBehaviour
     [SerializeField]
     private Sprite directorySprite;
 
+    public void InitializeButton(SelectButtonType type, string innerText, UnityAction actionCall)
+    {
+        SetButtonType(type);
+        SetInnerText(innerText);
+        AddListener(actionCall);
+    }
+
     public void SetButtonType(SelectButtonType type)
     {
         icon.sprite = type == SelectButtonType.FILE ? fileSprite : directorySprite;
