@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -157,7 +156,7 @@ public class FileBrowser : MonoBehaviour
             "..Back",
             () => SetupStartButtons());
 
-        foreach(string fileName in foundMusicFiles.Keys)
+        foreach (string fileName in foundMusicFiles.Keys)
         {
             if (fileName.ToLower().Contains(currentValue.ToLower()))
             {
