@@ -1,9 +1,10 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 public class FileBrowser : MonoBehaviour
 {
@@ -11,14 +12,21 @@ public class FileBrowser : MonoBehaviour
     private GameObject buttonsContainer;
     [SerializeField]
     private GameObject buttonPrefab;
+    [SerializeField]
+    private GameObject searchBarPrefab;
 
     private string currentPath = "C:\\";
     private int distanceFromStartMenu;
 
     private UnityEvent<string> onAudioFileSelected;
 
+    private TMP_InputField searchBarInputField;
+    private Dictionary<string, string> foundMusicFiles;
+
     void Start()
     {
+        foundMusicFiles = new Dictionary<string, string>();
+        SearchMusicFiles(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Music"));
         SetupStartButtons();
     }
 
@@ -31,7 +39,7 @@ public class FileBrowser : MonoBehaviour
 
         currentPath = newCurrentPath;
 
-        DeleteChildrenOfGameObject(buttonsContainer);
+        DeleteChildrenOfGameObject(buttonsContainer, false);
 
         UnityAction backActionCall;
         if (distanceFromStartMenu <= 1)
@@ -76,13 +84,19 @@ public class FileBrowser : MonoBehaviour
         onAudioFileSelected.AddListener(listener);
     }
 
-    private void DeleteChildrenOfGameObject(GameObject parent)
+    private void DeleteChildrenOfGameObject(GameObject parent, bool dontDestroyFirst)
     {
         int childCount = parent.transform.childCount;
 
-        for (int i = childCount - 1; i >= 0; i--)
+        for (int i = childCount - 1; i >= 1; i--)
         {
             GameObject child = parent.transform.GetChild(i).gameObject;
+            Destroy(child);
+        }
+
+        if (!dontDestroyFirst && childCount > 0)
+        {
+            GameObject child = parent.transform.GetChild(0).gameObject;
             Destroy(child);
         }
     }
@@ -91,7 +105,10 @@ public class FileBrowser : MonoBehaviour
     {
         distanceFromStartMenu = 0;
 
-        DeleteChildrenOfGameObject(buttonsContainer);
+        DeleteChildrenOfGameObject(buttonsContainer, false);
+
+        searchBarInputField = Instantiate(searchBarPrefab, buttonsContainer.transform).GetComponent<TMP_InputField>();
+        searchBarInputField.onValueChanged.AddListener(OnSearchBarValueChange);
 
         SelectFileButton musicFolder = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
         musicFolder.InitializeButton(
@@ -112,6 +129,44 @@ public class FileBrowser : MonoBehaviour
                 SelectFileButton.SelectButtonType.DIRECTORY,
                 drive.Name,
                 () => UpdateCurrentPath(drive.RootDirectory.FullName));
+        }
+    }
+
+    private void SearchMusicFiles(string startingPath)
+    {
+        foreach (string dir in Directory.GetDirectories(startingPath))
+            SearchMusicFiles(Path.Combine(startingPath, dir));
+
+        foreach (string file in Directory.GetFiles(startingPath))
+            if (file.EndsWith(".mp3") || file.EndsWith(".wav"))
+                foundMusicFiles.Add(
+                    file[(file.LastIndexOf("\\") + 1)..].Replace(".mp3", "").Replace(".wav", ""),
+                    Path.Combine(startingPath, file));
+    }
+
+    private void OnSearchBarValueChange(string currentValue)
+    {
+        if (currentValue.Length <= 3)
+            return;
+
+        DeleteChildrenOfGameObject(buttonsContainer, true);
+
+        SelectFileButton backDir = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
+        backDir.InitializeButton(
+            SelectFileButton.SelectButtonType.DIRECTORY,
+            "..Back",
+            () => SetupStartButtons());
+
+        foreach(string fileName in foundMusicFiles.Keys)
+        {
+            if (fileName.ToLower().Contains(currentValue.ToLower()))
+            {
+                SelectFileButton songFile = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
+                songFile.InitializeButton(
+                    SelectFileButton.SelectButtonType.FILE,
+                    fileName,
+                    () => onAudioFileSelected.Invoke(foundMusicFiles[fileName]));
+            }
         }
     }
 }

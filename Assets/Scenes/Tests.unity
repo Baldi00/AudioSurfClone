@@ -761,6 +761,8 @@ MonoBehaviour:
   buttonsContainer: {fileID: 1695876527}
   buttonPrefab: {fileID: 2683191122742474418, guid: 2f0055ba595a54b40a2e75ee4e85cdee,
     type: 3}
+  searchBarPrefab: {fileID: 2160525604931971095, guid: 3429f3c781ce4dd4c8ac1b65967a2141,
+    type: 3}
 --- !u!4 &718914523
 Transform:
   m_ObjectHideFlags: 0
