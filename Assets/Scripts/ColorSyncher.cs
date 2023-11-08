@@ -25,4 +25,9 @@ public class ColorSyncher : MonoBehaviour
     {
         colorSynchables.Add(colorSynchable);
     }
+
+    public void RemoveColorSynchables()
+    {
+        colorSynchables.Clear();
+    }
 }

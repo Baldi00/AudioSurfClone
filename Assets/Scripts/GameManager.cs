@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class GameManager : MonoBehaviour
     private FileBrowser fileBrowser;
     [SerializeField]
     private TrackManager trackManager;
+    [SerializeField]
+    private PauseManager pauseManager;
 
     [SerializeField]
     private GameObject selectFileUi;
@@ -21,6 +24,7 @@ public class GameManager : MonoBehaviour
     private ColorSyncher colorSyncher;
 
     private BSpline trackSpline;
+    private GameObject player;
 
     List<int> lowBeatIndexes;
 
@@ -28,6 +32,7 @@ public class GameManager : MonoBehaviour
     {
         fileBrowser.AddOnAudioFileSelectedListener((songPath) => StartCoroutine(LoadAudioAndStartGame(songPath)));
         colorSyncher.enabled = false;
+        pauseManager.enabled = false;
 
     }
 
@@ -41,19 +46,28 @@ public class GameManager : MonoBehaviour
             Debug.Log("Beat " + i);
     }
 
+    public void BackToSelectMenu()
+    {
+        Destroy(player);
+        selectFileUi.SetActive(true);
+        colorSyncher.RemoveColorSynchables();
+        colorSyncher.enabled = false;
+        pauseManager.enabled = false;
+    }
+
     private IEnumerator LoadAudioAndStartGame(string songPath)
     {
         yield return StartCoroutine(AudioLoader.LoadAudio("file:\\\\" + songPath, audioSource));
 
-        double[][] spectrum = AudioAnalyzer.GetAudioSpectrum(audioSource.clip, 4096);
+        //double[][] spectrum = AudioAnalyzer.GetAudioSpectrum(audioSource.clip, 4096);
         //lowBeatIndexes = BeatDetector.GetBeatIndexes(spectrum, 4096, audioSource.clip, 7500, 0.005f, 0.15f); //high
-        lowBeatIndexes = BeatDetector.GetBeatIndexes(spectrum, 4096, audioSource.clip, 20, 0.2f, 0.15f); //low
+        //lowBeatIndexes = BeatDetector.GetBeatIndexes(spectrum, 4096, audioSource.clip, 20, 0.2f, 0.15f); //low
 
         trackManager.GenerateTrack(audioSource.clip, 4096);
         trackSpline = trackManager.GetTrackSpline();
 
         selectFileUi.SetActive(false);
-        GameObject player = Instantiate(playerPrefab);
+        player = Instantiate(playerPrefab);
         PlayerController playerController = player.GetComponent<PlayerController>();
         playerController.SetNormalizedIntensities(trackManager.GetNormalizedIntensities());
         playerController.StartFollowingTrack(trackSpline, audioSource);
@@ -61,6 +75,7 @@ public class GameManager : MonoBehaviour
         colorSyncher.AddColorSynchable(playerColorSyncher);
 
         colorSyncher.enabled = true;
+        pauseManager.enabled = true;
         audioSource.Play();
     }
 

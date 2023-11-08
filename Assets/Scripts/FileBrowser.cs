@@ -38,7 +38,7 @@ public class FileBrowser : MonoBehaviour
 
         currentPath = newCurrentPath;
 
-        DeleteChildrenOfGameObject(buttonsContainer, false);
+        DeleteChildrenOfGameObject(buttonsContainer, true);
 
         UnityAction backActionCall;
         if (distanceFromStartMenu <= 1)
@@ -145,7 +145,7 @@ public class FileBrowser : MonoBehaviour
 
     private void OnSearchBarValueChange(string currentValue)
     {
-        if (currentValue.Length <= 3)
+        if (currentValue.Length <= 2)
             return;
 
         DeleteChildrenOfGameObject(buttonsContainer, true);
