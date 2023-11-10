@@ -2167,6 +2167,8 @@ MonoBehaviour:
   pauseManager: {fileID: 1649067790}
   selectFileUi: {fileID: 1806092574}
   colorSyncher: {fileID: 1649067789}
+  blockPrefab: {fileID: 3782547491752180444, guid: 63946fccfc2fcf947ba5c5e5574a9cea,
+    type: 3}
 --- !u!4 &1649067788
 Transform:
   m_ObjectHideFlags: 0

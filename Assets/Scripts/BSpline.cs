@@ -127,6 +127,11 @@ public class BSpline
         inter = lerp % 1;
     }
 
+    public float GetSplinePercentageFromTrackIndex(int index)
+    {
+        return Mathf.InverseLerp(0, points.Count - 4, index);
+    }
+
     private Vector3 GetPointOnSubSpline(float t, Vector3 p1, Vector3 p2, Vector3 p3, Vector3 p4)
     {
         float[,] interpolators = new float[1, 4];
