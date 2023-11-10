@@ -103,9 +103,13 @@ public class PlayerController : MonoBehaviour
         followTrack = true;
     }
 
+    public void StopFollowinTrack()
+    {
+        followTrack = false;
+    }
+
     public void SetNormalizedIntensities(float[] normalizedIntensities)
     {
         this.normalizedIntensities = normalizedIntensities;
     }
-
 }

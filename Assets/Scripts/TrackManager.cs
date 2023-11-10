@@ -101,7 +101,7 @@ public class TrackManager : MonoBehaviour
 
     private void VisualizeAudioSpectrum(AudioClip audioClip, int frequency, int windowSize)
     {
-        double[][] spectrum = AudioAnalyzer.GetAudioSpectrum(audioClip, windowSize);
+        float[][] spectrum = AudioAnalyzer.GetAudioSpectrum(audioClip, windowSize);
         int frequencyIndex = (int)(128f / (20000 - 20) * frequency);
         Vector3[] frequencyPoints = new Vector3[spectrum.Length];
         for (int i = 0; i < spectrum.Length; i++)

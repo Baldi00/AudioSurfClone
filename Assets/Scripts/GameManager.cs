@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class GameManager : MonoBehaviour
 {
@@ -52,15 +51,17 @@ public class GameManager : MonoBehaviour
         selectFileUi.SetActive(true);
         colorSyncher.enabled = false;
         pauseManager.enabled = false;
+        playerController.StopFollowinTrack();
+        lowBeatIndexes = null;
     }
 
     private IEnumerator LoadAudioAndStartGame(string songPath)
     {
         yield return StartCoroutine(AudioLoader.LoadAudio("file:\\\\" + songPath, audioSource));
 
-        //double[][] spectrum = AudioAnalyzer.GetAudioSpectrum(audioSource.clip, 4096);
-        //lowBeatIndexes = BeatDetector.GetBeatIndexes(spectrum, 4096, audioSource.clip, 7500, 0.005f, 0.15f); //high
-        //lowBeatIndexes = BeatDetector.GetBeatIndexes(spectrum, 4096, audioSource.clip, 20, 0.2f, 0.15f); //low
+        float[][] spectrum = AudioAnalyzer.GetAudioSpectrum(audioSource.clip, 4096);
+        //lowBeatIndexes = BeatDetector.GetBeatIndexes(spectrum, 4096, audioSource.clip, 7500, 0.025f, 0.15f); //high
+        lowBeatIndexes = BeatDetector.GetBeatIndexes(spectrum, 4096, audioSource.clip, 20, 0.1f, 0.25f); //low
 
         trackManager.GenerateTrack(audioSource.clip, 4096);
         trackSpline = trackManager.GetTrackSpline();
