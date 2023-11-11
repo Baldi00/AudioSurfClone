@@ -129,7 +129,7 @@ GameObject:
   - component: {fileID: 1947679311}
   - component: {fileID: 1947679313}
   - component: {fileID: 1947679312}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: SpaceshipSpotLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -200,7 +200,7 @@ Light:
   m_RenderMode: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 8
   m_RenderingLayerMask: 1
   m_Lightmapping: 4
   m_LightShadowCasterMode: 0
@@ -244,7 +244,7 @@ GameObject:
   - component: {fileID: 1813650845399142316}
   - component: {fileID: 6977817745698535730}
   - component: {fileID: 1571824091723949549}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: SpaceshipRenderer
   m_TagString: Untagged
   m_Icon: {fileID: 0}

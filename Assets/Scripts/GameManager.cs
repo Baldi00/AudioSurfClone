@@ -69,7 +69,7 @@ public class GameManager : MonoBehaviour
                 blockPrefab,
                 trackSpline.GetSplinePoint(percentage) + Vector3.forward * ((lowBeatIndex + spawnLocationNoise) % 3 - 1) * 2.5f,
                 Quaternion.LookRotation(trackSpline.GetSplineTangent(percentage), Vector3.up),
-                blockContainer.transform).GetComponent<Renderer>().material.color = trackSpline.GetSplineColor(percentage);
+                blockContainer.transform).GetComponentInChildren<Renderer>().material.color = trackSpline.GetSplineColor(percentage);
 
             spawnLocationNoise++;
         }
@@ -85,7 +85,7 @@ public class GameManager : MonoBehaviour
                 blockPrefab,
                 trackSpline.GetSplinePoint(percentage) + Vector3.forward * ((highBeatIndex + spawnLocationNoise) % 3 - 1) * 2.5f,
                 Quaternion.LookRotation(trackSpline.GetSplineTangent(percentage), Vector3.up),
-                blockContainer.transform).GetComponent<Renderer>().material.color = trackSpline.GetSplineColor(percentage); ;
+                blockContainer.transform).GetComponentInChildren<Renderer>().material.color = trackSpline.GetSplineColor(percentage); ;
 
             spawnLocationNoise++;
         }
