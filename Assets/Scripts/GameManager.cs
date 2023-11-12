@@ -60,20 +60,8 @@ public class GameManager : MonoBehaviour
             return;
 
         float currentPercentage = GetCurrentAudioTimePercentage();
-
         blockMaterial.color = trackSpline.GetSplineColor(currentPercentage);
-
-        for (int i = 0; i < blocksData.Count; i++)
-        {
-            float finalPercentage = blocksData[i].endPercentage;
-            float currentBlockPositionPercentage = Mathf.Lerp(finalPercentage - 0.075f, finalPercentage,
-                    Mathf.InverseLerp(finalPercentage - 0.5f, finalPercentage, currentPercentage));
-
-            Vector3 position = trackSpline.GetSplinePoint(currentBlockPositionPercentage) + Vector3.forward * blocksData[i].zPosition;
-            Quaternion rotation = Quaternion.LookRotation(trackSpline.GetSplineTangent(currentBlockPositionPercentage), Vector3.up);
-
-            blocksData[i].blockTransform.parent.SetPositionAndRotation(position, rotation);
-        }
+        UpdateBlocksPositions(currentPercentage);
     }
 
     public void BackToSelectMenu()
@@ -160,5 +148,25 @@ public class GameManager : MonoBehaviour
             if (list.Contains(i))
                 return true;
         return false;
+    }
+
+    private void UpdateBlocksPositions(float currentPercentage)
+    {
+        for (int i = 0; i < blocksData.Count; i++)
+        {
+            float finalPercentage = blocksData[i].endPercentage;
+            float currentBlockPercentage = Mathf.InverseLerp(finalPercentage - 0.5f, finalPercentage, currentPercentage);
+
+            if (currentBlockPercentage <= Mathf.Epsilon || currentBlockPercentage >= 1 - Mathf.Epsilon)
+                continue;
+
+            float currentBlockPositionPercentage =
+                Mathf.Lerp(finalPercentage - 0.075f, finalPercentage, currentBlockPercentage);
+
+            Vector3 position = trackSpline.GetSplinePoint(currentBlockPositionPercentage) + Vector3.forward * blocksData[i].zPosition;
+            Quaternion rotation = Quaternion.LookRotation(trackSpline.GetSplineTangent(currentBlockPositionPercentage), Vector3.up);
+
+            blocksData[i].blockTransform.parent.SetPositionAndRotation(position, rotation);
+        }
     }
 }
