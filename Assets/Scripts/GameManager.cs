@@ -11,30 +11,29 @@ public class GameManager : MonoBehaviour
         public float zPosition;
     }
 
-    [SerializeField]
-    private AudioSource audioSource;
+    [SerializeField] private AudioSource audioSource;
 
-    [SerializeField]
-    private PlayerController playerController;
-    [SerializeField]
-    private FileBrowser fileBrowser;
-    [SerializeField]
-    private TrackManager trackManager;
-    [SerializeField]
-    private PauseManager pauseManager;
+    [SerializeField] private PlayerController playerController;
+    [SerializeField] private FileBrowser fileBrowser;
+    [SerializeField] private TrackManager trackManager;
+    [SerializeField] private PauseManager pauseManager;
 
-    [SerializeField]
-    private GameObject selectFileUi;
+    [SerializeField] private GameObject selectFileUi;
 
-    [SerializeField]
-    private ColorSyncher colorSyncher;
+    [SerializeField] private ColorSyncher colorSyncher;
 
-    [SerializeField]
-    private GameObject blockPrefab;
-    [SerializeField]
-    private Material blockMaterial;
+    [SerializeField] private GameObject blockPrefab;
+    [SerializeField] private Material blockMaterial;
 
-    private GameObject blockContainer;
+    [Header("Block spawn")]
+    [SerializeField] private int lowBeatFrequency = 20;
+    [SerializeField] private float lowBeatThreshold = 0.1f;
+    [SerializeField] private float lowBeatSkip = 0.5f;
+    [SerializeField] private int highBeatFrequency = 7500;
+    [SerializeField] private float highBeatThreshold = 0.025f;
+    [SerializeField] private float highBeatSkip = 0.5f;
+
+    private GameObject blocksContainer;
     private BSpline trackSpline;
     private List<BlockData> blocksData;
 
@@ -72,7 +71,7 @@ public class GameManager : MonoBehaviour
         colorSyncher.enabled = false;
         pauseManager.enabled = false;
         playerController.StopFollowinTrack();
-        Destroy(blockContainer);
+        Destroy(blocksContainer);
         blocksData.Clear();
     }
 
@@ -84,43 +83,21 @@ public class GameManager : MonoBehaviour
         trackSpline = trackManager.GetTrackSpline();
 
         // Spawn blocks
-        blockContainer = new GameObject("Blocks container");
+        blocksContainer = new GameObject("Blocks container");
         float[][] spectrum = AudioAnalyzer.GetAudioSpectrum(audioSource.clip, 4096);
-        List<int> lowBeatIndexes = BeatDetector.GetBeatIndexes(spectrum, 4096, audioSource.clip, 20, 0.1f, 0.5f); //low
+
+        List<int> lowBeatIndexes =
+            BeatDetector.GetBeatIndexes(spectrum, 4096, audioSource.clip, lowBeatFrequency, lowBeatThreshold, lowBeatSkip);
+        List<int> highBeatIndexes =
+            BeatDetector.GetBeatIndexes(spectrum, 4096, audioSource.clip, highBeatFrequency, highBeatThreshold, highBeatSkip);
+
+        RemoveNearBeats(lowBeatIndexes, highBeatIndexes, 5);
 
         int spawnLocationNoise = 0;
-        foreach (int lowBeatIndex in lowBeatIndexes)
-        {
-            float percentage = trackSpline.GetSplinePercentageFromTrackIndex(lowBeatIndex + 4);
-            Renderer blockRenderer = Instantiate(
-                blockPrefab,
-                trackSpline.GetSplinePoint(percentage) + Vector3.forward * ((lowBeatIndex + spawnLocationNoise) % 3 - 1) * 2.5f,
-                Quaternion.LookRotation(trackSpline.GetSplineTangent(percentage), Vector3.up),
-                blockContainer.transform).GetComponentInChildren<Renderer>();
-            blocksData.Add(new BlockData { blockTransform = blockRenderer.transform, endPercentage = percentage, zPosition = ((lowBeatIndex + spawnLocationNoise) % 3 - 1) * 2.5f });
-
-            spawnLocationNoise++;
-        }
-
-        List<int> highBeatIndexes = BeatDetector.GetBeatIndexes(spectrum, 4096, audioSource.clip, 7500, 0.025f, 0.5f); //high
-        foreach (int highBeatIndex in highBeatIndexes)
-        {
-            if (ListContainsInRange(lowBeatIndexes, highBeatIndex, 5))
-                continue;
-
-            float percentage = trackSpline.GetSplinePercentageFromTrackIndex(highBeatIndex + 4);
-            Renderer blockRenderer = Instantiate(
-                blockPrefab,
-                trackSpline.GetSplinePoint(percentage) + Vector3.forward * ((highBeatIndex + spawnLocationNoise) % 3 - 1) * 2.5f,
-                Quaternion.LookRotation(trackSpline.GetSplineTangent(percentage), Vector3.up),
-                blockContainer.transform).GetComponentInChildren<Renderer>();
-            blocksData.Add(new BlockData { blockTransform = blockRenderer.transform, endPercentage = percentage, zPosition = ((highBeatIndex + spawnLocationNoise) % 3 - 1) * 2.5f });
-
-            spawnLocationNoise++;
-        }
+        SpawnBlocks(lowBeatIndexes, ref spawnLocationNoise);
+        SpawnBlocks(highBeatIndexes, ref spawnLocationNoise);
 
         // Final setup
-
         selectFileUi.SetActive(false);
         playerController.SetNormalizedIntensities(trackManager.GetNormalizedIntensities());
         playerController.StartFollowingTrack(trackSpline);
@@ -132,6 +109,29 @@ public class GameManager : MonoBehaviour
         IsGameRunning = true;
     }
 
+    private void SpawnBlocks(List<int> beatIndexes, ref int spawnLocationNoise)
+    {
+        foreach (int beatIndex in beatIndexes)
+        {
+            float percentage = trackSpline.GetSplinePercentageFromTrackIndex(beatIndex + 4);
+            float blockSpawnZPosition = ((beatIndex + spawnLocationNoise) % 3 - 1) * 2.5f;
+
+            GameObject block = Instantiate(blockPrefab,
+                trackSpline.GetSplinePoint(percentage) + Vector3.forward * blockSpawnZPosition,
+                Quaternion.LookRotation(trackSpline.GetSplineTangent(percentage), Vector3.up),
+                blocksContainer.transform);
+
+            blocksData.Add(new BlockData
+            {
+                blockTransform = block.transform,
+                endPercentage = percentage,
+                zPosition = blockSpawnZPosition
+            });
+
+            spawnLocationNoise++;
+        }
+    }
+
     public float GetCurrentAudioTimePercentage()
     {
         return audioSource.time / audioSource.clip.length;
@@ -140,6 +140,17 @@ public class GameManager : MonoBehaviour
     public Color GetCurrentColor()
     {
         return trackSpline.GetSplineColor(GetCurrentAudioTimePercentage());
+    }
+
+    private void RemoveNearBeats(List<int> baseBeats, List<int> additiveBeats, int range)
+    {
+        List<int> toRemove = new List<int>();
+        foreach (int additiveBeat in additiveBeats)
+        {
+            if (ListContainsInRange(baseBeats, additiveBeat, range))
+                toRemove.Add(additiveBeat);
+        }
+        additiveBeats.RemoveAll(beat => toRemove.Contains(beat));
     }
 
     private bool ListContainsInRange(List<int> list, int toCheck, int range)
@@ -166,7 +177,7 @@ public class GameManager : MonoBehaviour
             Vector3 position = trackSpline.GetSplinePoint(currentBlockPositionPercentage) + Vector3.forward * blocksData[i].zPosition;
             Quaternion rotation = Quaternion.LookRotation(trackSpline.GetSplineTangent(currentBlockPositionPercentage), Vector3.up);
 
-            blocksData[i].blockTransform.parent.SetPositionAndRotation(position, rotation);
+            blocksData[i].blockTransform.SetPositionAndRotation(position, rotation);
         }
     }
 }
