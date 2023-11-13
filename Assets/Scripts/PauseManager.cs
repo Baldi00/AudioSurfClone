@@ -50,6 +50,9 @@ public class PauseManager : MonoBehaviour
         else
             audioSource.UnPause();
 
+        Cursor.visible = isPaused ? true : false;
+        Cursor.lockState = isPaused ? CursorLockMode.None : CursorLockMode.Locked;
+
         Time.timeScale = isPaused ? 0 : 1;
         pauseCanvas.SetActive(isPaused);
     }

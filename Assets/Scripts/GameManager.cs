@@ -214,6 +214,9 @@ public class GameManager : MonoBehaviour
         pauseManager.enabled = true;
         audioSource.Play();
         IsGameRunning = true;
+
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void SpawnBlocks(List<int> beatIndexes, ref int spawnLocationNoise)
