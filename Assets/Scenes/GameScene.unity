@@ -364,6 +364,7 @@ GameObject:
   m_Component:
   - component: {fileID: 350832208}
   - component: {fileID: 350832207}
+  - component: {fileID: 350832209}
   m_Layer: 0
   m_Name: AudioSource
   m_TagString: Untagged
@@ -482,6 +483,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &350832209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 350832205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22369c9fb47b6284a9f95050471d1d00, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  source: {fileID: 350832207}
+  pickBeat: {fileID: 8300000, guid: f5e3e5d3fbb29d34fa5aed8f6d538a5f, type: 3}
 --- !u!1 &360099920
 GameObject:
   m_ObjectHideFlags: 0
@@ -1596,10 +1611,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 330585547, guid: 883353ef6d9d8e948bc3fda07b3e6226, type: 3}
-      propertyPath: m_CameraType
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2742999946798501491, guid: 883353ef6d9d8e948bc3fda07b3e6226,
         type: 3}
       propertyPath: m_Name
@@ -2174,6 +2185,12 @@ MonoBehaviour:
   blockPrefab: {fileID: 3782547491752180444, guid: 63946fccfc2fcf947ba5c5e5574a9cea,
     type: 3}
   blockMaterial: {fileID: 2100000, guid: 84f570d55079b774ba8bd501b4c92fb1, type: 2}
+  lowBeatFrequency: 20
+  lowBeatThreshold: 0.1
+  lowBeatSkip: 0.5
+  highBeatFrequency: 7500
+  highBeatThreshold: 0.025
+  highBeatSkip: 0.5
 --- !u!4 &1649067788
 Transform:
   m_ObjectHideFlags: 0

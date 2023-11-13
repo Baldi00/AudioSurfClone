@@ -58,7 +58,6 @@ public class GameManager : MonoBehaviour
         fileBrowser.AddOnAudioFileSelectedListener((songPath) => StartCoroutine(LoadAudioAndStartGame(songPath)));
         PlayerColorSyncher playerColorSyncher = playerController.GetComponent<PlayerColorSyncher>();
         colorSyncher.AddColorSynchable(playerColorSyncher);
-        playerController.gameObject.SetActive(false);
         colorSyncher.enabled = false;
         pauseManager.enabled = false;
 
@@ -138,7 +137,6 @@ public class GameManager : MonoBehaviour
 
         colorSyncher.enabled = true;
         pauseManager.enabled = true;
-        playerController.gameObject.SetActive(true);
         audioSource.Play();
         IsGameRunning = true;
     }
