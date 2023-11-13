@@ -12,6 +12,8 @@ public class BlockTriggerHandler : MonoBehaviour
 
     private float timer;
     private Transform playerTransform;
+    private float xOffset;
+    private float yOffset;
 
     void Awake()
     {
@@ -24,15 +26,16 @@ public class BlockTriggerHandler : MonoBehaviour
             return;
 
         timer += Time.deltaTime;
-        renderer.transform.position += goingUpAnimationSpeed * Time.deltaTime * renderer.transform.up;
+
+        renderer.transform.position = new Vector3(
+            playerTransform.position.x + xOffset,
+            playerTransform.position.y + yOffset + goingUpAnimationSpeed * timer,
+            renderer.transform.position.z);
 
         renderer.material.SetFloat("_Alpha", Mathf.InverseLerp(goingUpAnimationDuration, 0, timer));
 
         if (timer >= goingUpAnimationDuration)
-        {
-            Destroy(renderer.gameObject);
             container.SetActive(false);
-        }
     }
 
     void OnTriggerEnter(Collider other)
@@ -40,11 +43,10 @@ public class BlockTriggerHandler : MonoBehaviour
         if (other.CompareTag("PickTrigger"))
         {
             Debug.Log("Pick");
-
-            renderer.transform.parent = playerTransform;
-
             isPicked = true;
             myCollider.enabled = false;
+            xOffset = renderer.transform.position.x - playerTransform.position.x;
+            yOffset = renderer.transform.position.y - playerTransform.position.y;
         }
         else if (other.CompareTag("MissTrigger") && !isPicked)
             Debug.Log("Miss");
