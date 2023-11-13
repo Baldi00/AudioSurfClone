@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Material blockMaterial;
 
     [Header("Block spawn")]
+    [SerializeField] private float maxDistanceFromCenter = 2.2f;
     [SerializeField] private int lowBeatFrequency = 20;
     [SerializeField] private float lowBeatThreshold = 0.1f;
     [SerializeField] private float lowBeatSkip = 0.5f;
@@ -146,7 +147,7 @@ public class GameManager : MonoBehaviour
         foreach (int beatIndex in beatIndexes)
         {
             float percentage = trackSpline.GetSplinePercentageFromTrackIndex(beatIndex + 4);
-            float blockSpawnZPosition = ((beatIndex + spawnLocationNoise) % 3 - 1) * 2.5f;
+            float blockSpawnZPosition = ((beatIndex + spawnLocationNoise) % 3 - 1) * maxDistanceFromCenter;
 
             GameObject block = Instantiate(blockPrefab,
                 trackSpline.GetSplinePoint(percentage) + Vector3.forward * blockSpawnZPosition,
