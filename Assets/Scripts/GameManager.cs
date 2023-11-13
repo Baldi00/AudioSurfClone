@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
@@ -38,6 +39,14 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float highBeatThreshold = 0.025f;
     [SerializeField] private float highBeatSkip = 0.5f;
 
+    [Header("UI")]
+    [SerializeField] private Transform gameUiContainer;
+    [SerializeField] private TextMeshProUGUI songNameUiText;
+    [SerializeField] private TextMeshProUGUI pointsUiText;
+    [SerializeField] private TextMeshProUGUI pointsPercentageUiText;
+    [SerializeField] private GameObject pointsIncrementPrefab;
+    [SerializeField] private float pointsIncrementDistanceFromCenter;
+
     private GameObject blocksContainer;
     private BSpline trackSpline;
 
@@ -49,6 +58,12 @@ public class GameManager : MonoBehaviour
     private TransformAccessArray blocksTransformsAccessArray;
     private JobHandle updateBlocksPositionJobHandle;
     private UpdateBlockPositionsJob updateBlocksPositionJob;
+
+    private int totalTrackPoints;
+    private int currentPoints;
+    private int currentPointsIncrement = 1;
+
+    private int pointsIncrementUiSpawnPosition = 1;
 
     public bool IsGameRunning { get; private set; }
 
@@ -78,9 +93,14 @@ public class GameManager : MonoBehaviour
 
     void OnDestroy()
     {
-        trackSplinePointsNativeArray.Dispose();
-        blocksDataNativeArray.Dispose();
-        blocksTransformsAccessArray.Dispose();
+        if (trackSplinePointsNativeArray.IsCreated)
+            trackSplinePointsNativeArray.Dispose();
+
+        if (blocksDataNativeArray.IsCreated)
+            blocksDataNativeArray.Dispose();
+
+        if (blocksTransformsAccessArray.isCreated)
+            blocksTransformsAccessArray.Dispose();
     }
 
     public void BackToSelectMenu()
@@ -94,9 +114,59 @@ public class GameManager : MonoBehaviour
         Destroy(blocksContainer);
         blocksData.Clear();
         blocksTransforms.Clear();
-        trackSplinePointsNativeArray.Dispose();
-        blocksDataNativeArray.Dispose();
-        blocksTransformsAccessArray.Dispose();
+
+        if (trackSplinePointsNativeArray.IsCreated)
+            trackSplinePointsNativeArray.Dispose();
+
+        if (blocksDataNativeArray.IsCreated)
+            blocksDataNativeArray.Dispose();
+
+        if (blocksTransformsAccessArray.isCreated)
+            blocksTransformsAccessArray.Dispose();
+    }
+
+    public void BlockPicked()
+    {
+        currentPoints += currentPointsIncrement;
+
+        pointsUiText.text = $"{currentPoints}";
+        pointsPercentageUiText.text = (currentPoints * 100f / totalTrackPoints).ToString("0.00") + "%";
+
+        PointsIncrementUiMover pointsMover = Instantiate(pointsIncrementPrefab,
+            pointsUiText.transform.position + pointsIncrementUiSpawnPosition * pointsIncrementDistanceFromCenter * Vector3.right,
+            Quaternion.identity,
+            gameUiContainer.transform)
+            .GetComponent<PointsIncrementUiMover>();
+
+        pointsMover.Setup($"+{currentPointsIncrement}",
+            pointsIncrementUiSpawnPosition * pointsIncrementDistanceFromCenter,
+            pointsIncrementUiSpawnPosition,
+            Color.white);
+
+        pointsIncrementUiSpawnPosition = -pointsIncrementUiSpawnPosition;
+
+        currentPointsIncrement = Mathf.Min(200, currentPointsIncrement + 2);
+    }
+
+    public void BlockMissed()
+    {
+        PointsIncrementUiMover pointsMover = Instantiate(pointsIncrementPrefab,
+            pointsUiText.transform.position + pointsIncrementUiSpawnPosition * pointsIncrementDistanceFromCenter * Vector3.right,
+            Quaternion.identity,
+            gameUiContainer.transform)
+            .GetComponent<PointsIncrementUiMover>();
+
+        pointsMover.Setup($"-{Mathf.Min(currentPoints, 200)}",
+            pointsIncrementUiSpawnPosition * pointsIncrementDistanceFromCenter,
+            pointsIncrementUiSpawnPosition,
+            Color.red);
+
+        pointsIncrementUiSpawnPosition = -pointsIncrementUiSpawnPosition;
+
+        currentPoints = Mathf.Max(0, currentPoints - 200);
+        currentPointsIncrement = 1;
+        pointsUiText.text = $"{currentPoints}";
+        pointsPercentageUiText.text = (currentPoints * 100f / totalTrackPoints).ToString("0.00") + "%";
     }
 
     private IEnumerator LoadAudioAndStartGame(string songPath)
@@ -106,6 +176,8 @@ public class GameManager : MonoBehaviour
         trackManager.GenerateTrack(audioSource.clip, 4096);
         trackSpline = trackManager.GetTrackSpline();
         trackSplinePoints = trackSpline.GetSplinePoints();
+
+        songNameUiText.text = songPath[(songPath.LastIndexOf("\\") + 1)..].Replace(".mp3", "").Replace(".wav", "");
 
         // Spawn blocks
         blocksContainer = new GameObject("Blocks container");
@@ -135,6 +207,8 @@ public class GameManager : MonoBehaviour
         selectFileUi.SetActive(false);
         playerController.SetNormalizedIntensities(trackManager.GetNormalizedIntensities());
         playerController.StartFollowingTrack(trackSpline);
+
+        ComputeTrackPoints();
 
         colorSyncher.enabled = true;
         pauseManager.enabled = true;
@@ -226,6 +300,17 @@ public class GameManager : MonoBehaviour
 
             transform.position = position;
             transform.rotation = rotation;
+        }
+    }
+
+    private void ComputeTrackPoints()
+    {
+        totalTrackPoints = 0;
+        int increment = 1;
+        for (int i = 0; i < blocksData.Count; i++)
+        {
+            totalTrackPoints += increment;
+            increment = Mathf.Min(200, increment + 2);
         }
     }
 }

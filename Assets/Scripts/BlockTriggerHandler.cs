@@ -10,13 +10,16 @@ public class BlockTriggerHandler : MonoBehaviour
 
     private bool isPicked;
 
-    private float timer;
+    private GameManager gameManager;
     private Transform playerTransform;
+
+    private float timer;
     private float xOffset;
     private float yOffset;
 
     void Awake()
     {
+        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
@@ -42,13 +45,13 @@ public class BlockTriggerHandler : MonoBehaviour
     {
         if (other.CompareTag("PickTrigger"))
         {
-            Debug.Log("Pick");
             isPicked = true;
             myCollider.enabled = false;
             xOffset = renderer.transform.position.x - playerTransform.position.x;
             yOffset = renderer.transform.position.y - playerTransform.position.y;
+            gameManager.BlockPicked();
         }
         else if (other.CompareTag("MissTrigger") && !isPicked)
-            Debug.Log("Miss");
+            gameManager.BlockMissed();
     }
 }

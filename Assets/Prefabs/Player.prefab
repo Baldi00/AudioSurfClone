@@ -10302,7 +10302,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3995087745883518675}
   - component: {fileID: 2533838918604202099}
-  - component: {fileID: 7602812300541132748}
+  - component: {fileID: 7208811103379551772}
   m_Layer: 0
   m_Name: MissTrigger
   m_TagString: MissTrigger
@@ -10336,9 +10336,9 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 10, y: 5, z: 0.5}
-  m_Center: {x: 0, y: 0, z: -0.6}
---- !u!54 &7602812300541132748
+  m_Size: {x: 20, y: 3, z: 0.5}
+  m_Center: {x: 0, y: 0, z: -1}
+--- !u!54 &7208811103379551772
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10353,7 +10353,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 1
+  m_CollisionDetection: 2
 --- !u!1 &4781857381444483496
 GameObject:
   m_ObjectHideFlags: 0
@@ -15384,7 +15384,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4765581072688537624}
   - component: {fileID: 1463851120382796786}
-  - component: {fileID: 4198106412319387122}
+  - component: {fileID: 1799129580638499906}
   m_Layer: 0
   m_Name: PickTrigger
   m_TagString: PickTrigger
@@ -15420,7 +15420,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.3, y: 0.45, z: 0.45}
   m_Center: {x: 0, y: 0.25, z: 0.5}
---- !u!54 &4198106412319387122
+--- !u!54 &1799129580638499906
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -15435,4 +15435,4 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 1
+  m_CollisionDetection: 2
