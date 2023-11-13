@@ -54,6 +54,11 @@ public class BSpline
         splineColors.Add(lastPoint);
     }
 
+    public List<Vector3> GetSplinePoints()
+    {
+        return splinePoints;
+    }
+
     public Vector3 GetSplinePoint(float t)
     {
         GetSplineIndexes(in t, out int u, out float inter);
