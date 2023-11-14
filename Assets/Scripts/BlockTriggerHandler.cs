@@ -8,9 +8,6 @@ public class BlockTriggerHandler : MonoBehaviour
     [SerializeField] private float goingUpAnimationSpeed;
     [SerializeField] private float goingUpAnimationDuration;
 
-    private bool isPicked;
-
-    private GameManager gameManager;
     private Transform playerTransform;
 
     private float timer;
@@ -19,15 +16,12 @@ public class BlockTriggerHandler : MonoBehaviour
 
     void Awake()
     {
-        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+        enabled = false;
     }
 
     void Update()
     {
-        if (!isPicked)
-            return;
-
         timer += Time.deltaTime;
 
         renderer.transform.position = new Vector3(
@@ -41,17 +35,11 @@ public class BlockTriggerHandler : MonoBehaviour
             container.SetActive(false);
     }
 
-    void OnTriggerEnter(Collider other)
+    public void Pick()
     {
-        if (other.CompareTag("PickTrigger"))
-        {
-            isPicked = true;
-            myCollider.enabled = false;
-            xOffset = renderer.transform.position.x - playerTransform.position.x;
-            yOffset = renderer.transform.position.y - playerTransform.position.y;
-            gameManager.BlockPicked();
-        }
-        else if (other.CompareTag("MissTrigger") && !isPicked)
-            gameManager.BlockMissed();
+        enabled = true;
+        myCollider.enabled = false;
+        xOffset = renderer.transform.position.x - playerTransform.position.x;
+        yOffset = renderer.transform.position.y - playerTransform.position.y;
     }
 }

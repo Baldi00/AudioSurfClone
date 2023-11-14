@@ -2278,6 +2278,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1668160598, guid: 883353ef6d9d8e948bc3fda07b3e6226, type: 3}
+      propertyPath: pickSphereOffset.z
+      value: -0.3
+      objectReference: {fileID: 0}
     - target: {fileID: 2742999946798501491, guid: 883353ef6d9d8e948bc3fda07b3e6226,
         type: 3}
       propertyPath: m_Name

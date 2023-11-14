@@ -3,25 +3,23 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField]
-    private float rotationToTangentSmoothness = 2.5f;
-    [SerializeField]
-    private float mouseSpeed = 3f;
-    [SerializeField]
-    private float maxInputOffset = 5f;
-    [SerializeField]
-    private Vector3 minCameraDistancePosition;
-    [SerializeField]
-    private Vector3 maxCameraDistancePosition;
-    [SerializeField]
-    private float minRocketFireDistance = 0f;
-    [SerializeField]
-    private float maxRocketFireDistance = 5f;
+    [SerializeField] private float rotationToTangentSmoothness = 2.5f;
+    [SerializeField] private float mouseSpeed = 3f;
+    [SerializeField] private float maxInputOffset = 5f;
+    [SerializeField] private Vector3 minCameraDistancePosition;
+    [SerializeField] private Vector3 maxCameraDistancePosition;
+    [SerializeField] private float minRocketFireDistance = 0f;
+    [SerializeField] private float maxRocketFireDistance = 5f;
 
-    [SerializeField]
-    private Transform playerCameraTransform;
-    [SerializeField]
-    private List<ParticleSystem> rocketFires;
+    [SerializeField] private Transform playerCameraTransform;
+    [SerializeField] private List<ParticleSystem> rocketFires;
+    [SerializeField] private Transform spaceShipTransform;
+
+    [Header("Blocks collisions")]
+    [SerializeField] private float pickSphereRadius;
+    [SerializeField] private Vector3 pickSphereOffset;
+    [SerializeField] private float missSphereRadius;
+    [SerializeField] private Vector3 missSphereOffset;
 
     private bool followTrack;
     private float[] normalizedIntensities;
@@ -58,6 +56,8 @@ public class PlayerController : MonoBehaviour
 
         currentPoint = trackSpline.GetSplinePoint(currentAudioTimePercentage);
         currentTangent = trackSpline.GetSplineTangent(currentAudioTimePercentage);
+
+        DoCollisionWithBlockChecks(transform.position, currentPoint + currentInputOffset);
 
         transform.position = currentPoint + currentInputOffset;
         transform.forward = Vector3.Lerp(transform.forward, currentTangent, rotationToTangentSmoothness * Time.deltaTime);
@@ -112,5 +112,26 @@ public class PlayerController : MonoBehaviour
     public void SetNormalizedIntensities(float[] normalizedIntensities)
     {
         this.normalizedIntensities = normalizedIntensities;
+    }
+
+    private void DoCollisionWithBlockChecks(Vector3 previousPosition, Vector3 nextPosition)
+    {
+        Vector3 direction = (nextPosition - previousPosition).normalized;
+        float distance = (nextPosition - previousPosition).magnitude;
+
+        Debug.DrawRay(previousPosition + spaceShipTransform.InverseTransformDirection(missSphereOffset), nextPosition - previousPosition, Color.magenta, 3);
+
+        if (Physics.SphereCast(previousPosition + spaceShipTransform.InverseTransformDirection(pickSphereOffset), pickSphereRadius,
+            direction, out RaycastHit pickHitInfo, distance) &&
+            pickHitInfo.collider.gameObject.CompareTag("Block"))
+        {
+            gameManager.BlockPicked();
+            pickHitInfo.collider.gameObject.GetComponent<BlockTriggerHandler>().Pick();
+        }
+
+        if (Physics.SphereCast(previousPosition + spaceShipTransform.InverseTransformDirection(missSphereOffset), missSphereRadius,
+            direction, out RaycastHit missHitInfo, distance) &&
+            missHitInfo.collider.gameObject.CompareTag("Block"))
+            gameManager.BlockMissed();
     }
 }
