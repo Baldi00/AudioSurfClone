@@ -17,7 +17,8 @@ public class ColorSyncher : MonoBehaviour
     void Update()
     {
         currentColor = gameManager.GetCurrentColor();
-        colorSynchables.ForEach(cs => cs.SyncColor(currentColor));
+        for (int i = 0; i < colorSynchables.Count; i++)
+            colorSynchables[i].SyncColor(currentColor);
     }
 
     public void AddColorSynchable(IColorSynchable colorSynchable)

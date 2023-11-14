@@ -69,28 +69,29 @@ public class PlayerController : MonoBehaviour
 
         trackSpline.GetSplineIndexes(currentAudioTimePercentage, out int u, out _);
         bool doBeat = !beatDone && previousU != u && u < normalizedIntensities.Length && normalizedIntensities[u] - normalizedIntensities[u + 1] <= -0.1f;
-        rocketFires.ForEach(ps =>
+
+        for (int i = 0; i < rocketFires.Count; i++)
         {
-            ParticleSystem.MainModule main = ps.main;
+            ParticleSystem.MainModule main = rocketFires[i].main;
 
             if (normalizedIntensities[u] <= 0.1f)
-                ps.Stop();
+                rocketFires[i].Stop();
             else if (doBeat)
             {
-                ps.Stop();
+                rocketFires[i].Stop();
                 main.startDelay = 0.005f;
                 beatDone = true;
                 previousU = u;
             }
-            else if (!ps.isPlaying)
+            else if (!rocketFires[i].isPlaying)
             {
-                ps.Play();
+                rocketFires[i].Play();
                 main.startDelay = 0f;
                 beatDone = false;
             }
 
             main.startSpeed = Mathf.Lerp(minRocketFireDistance, maxRocketFireDistance, normalizedIntensities[u]);
-        });
+        }
     }
 
     public void StartFollowingTrack(BSpline trackSpline)
