@@ -47,6 +47,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject pointsIncrementPrefab;
     [SerializeField] private float pointsIncrementDistanceFromCenter;
 
+    [Header("Effects")]
+    [SerializeField] private List<ParticleSystem> leftFireworks;
+    [SerializeField] private List<ParticleSystem> centerFireworks;
+    [SerializeField] private List<ParticleSystem> rightFireworks;
+
     private GameObject blocksContainer;
     private BSpline trackSpline;
 
@@ -125,7 +130,7 @@ public class GameManager : MonoBehaviour
             blocksTransformsAccessArray.Dispose();
     }
 
-    public void BlockPicked()
+    public void BlockPicked(BlockManager.BlockPosition blockPosition)
     {
         currentPoints += currentPointsIncrement;
 
@@ -146,6 +151,8 @@ public class GameManager : MonoBehaviour
         pointsIncrementUiSpawnPosition = -pointsIncrementUiSpawnPosition;
 
         currentPointsIncrement = Mathf.Min(200, currentPointsIncrement + 2);
+
+        EmitFireworks(blockPosition);
     }
 
     public void BlockMissed()
@@ -231,6 +238,12 @@ public class GameManager : MonoBehaviour
                 Quaternion.LookRotation(trackSpline.GetSplineTangent(percentage), Vector3.up),
                 blocksContainer.transform);
 
+            BlockManager.BlockPosition blockPosition = Mathf.Approximately(blockSpawnZPosition, 0) ?
+                BlockManager.BlockPosition.CENTER : blockSpawnZPosition > 0 ? BlockManager.BlockPosition.LEFT :
+                BlockManager.BlockPosition.RIGHT;
+
+            block.GetComponent<BlockManager>().Initialize(blockPosition);
+
             blocksData.Add(new BlockData
             {
                 endPercentage = percentage,
@@ -315,5 +328,19 @@ public class GameManager : MonoBehaviour
             totalTrackPoints += increment;
             increment = Mathf.Min(200, increment + 2);
         }
+    }
+
+    private void EmitFireworks(BlockManager.BlockPosition blockPosition)
+    {
+        List<ParticleSystem> currentParticleSystem = blockPosition switch
+        {
+            BlockManager.BlockPosition.LEFT => leftFireworks,
+            BlockManager.BlockPosition.CENTER => centerFireworks,
+            BlockManager.BlockPosition.RIGHT => rightFireworks,
+            _ => null,
+        };
+
+        for (int i = 0; i < currentParticleSystem.Count; i++)
+            currentParticleSystem[i].Play();
     }
 }

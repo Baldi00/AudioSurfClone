@@ -1,8 +1,14 @@
 using UnityEngine;
 
-public class BlockTriggerHandler : MonoBehaviour
+public class BlockManager : MonoBehaviour
 {
-    [SerializeField] private GameObject container;
+    public enum BlockPosition
+    {
+        LEFT,
+        CENTER,
+        RIGHT
+    }
+
     [SerializeField] private new Renderer renderer;
     [SerializeField] private Collider myCollider;
     [SerializeField] private float goingUpAnimationSpeed;
@@ -13,6 +19,8 @@ public class BlockTriggerHandler : MonoBehaviour
     private float timer;
     private float xOffset;
     private float yOffset;
+
+    public BlockPosition Position { get; private set; }
 
     void Awake()
     {
@@ -32,7 +40,12 @@ public class BlockTriggerHandler : MonoBehaviour
         renderer.material.SetFloat("_Alpha", Mathf.InverseLerp(goingUpAnimationDuration, 0, timer));
 
         if (timer >= goingUpAnimationDuration)
-            container.SetActive(false);
+            gameObject.SetActive(false);
+    }
+
+    public void Initialize(BlockPosition blockPosition)
+    {
+        Position = blockPosition;
     }
 
     public void Pick()

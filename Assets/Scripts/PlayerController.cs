@@ -125,8 +125,9 @@ public class PlayerController : MonoBehaviour
             direction, out RaycastHit pickHitInfo, distance) &&
             pickHitInfo.collider.gameObject.CompareTag("Block"))
         {
-            gameManager.BlockPicked();
-            pickHitInfo.collider.gameObject.GetComponent<BlockTriggerHandler>().Pick();
+            BlockManager blockManager = pickHitInfo.collider.gameObject.transform.parent.GetComponent<BlockManager>();
+            blockManager.Pick();
+            gameManager.BlockPicked(blockManager.Position);
         }
 
         if (Physics.SphereCast(previousPosition + spaceShipTransform.InverseTransformDirection(missSphereOffset), missSphereRadius,
