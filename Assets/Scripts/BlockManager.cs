@@ -14,17 +14,22 @@ public class BlockManager : MonoBehaviour
     [SerializeField] private float goingUpAnimationSpeed;
     [SerializeField] private float goingUpAnimationDuration;
 
+    [SerializeField] private Material defaultMaterial;
+
     private Transform playerTransform;
 
     private float timer;
     private float xOffset;
     private float yOffset;
 
+    private Vector3 startRendererPosition;
+
     public BlockPosition Position { get; private set; }
 
     void Awake()
     {
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+        startRendererPosition = renderer.transform.localPosition;
         enabled = false;
     }
 
@@ -59,5 +64,15 @@ public class BlockManager : MonoBehaviour
     public void DisableCollider()
     {
         myCollider.enabled = false;
+    }
+
+    public void ResetBlock()
+    {
+        renderer.sharedMaterial = defaultMaterial;
+        renderer.transform.localPosition = startRendererPosition;
+        myCollider.enabled = true;
+        gameObject.SetActive(true);
+        timer = 0;
+        enabled = false;
     }
 }

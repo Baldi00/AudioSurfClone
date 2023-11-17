@@ -43,7 +43,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (!followTrack)
+        if (!followTrack || !gameManager.IsGameRunning)
             return;
 
         currentAudioTimePercentage = gameManager.GetCurrentAudioTimePercentage();
@@ -134,7 +134,7 @@ public class PlayerController : MonoBehaviour
             direction, out RaycastHit missHitInfo, distance) &&
             missHitInfo.collider.gameObject.CompareTag("Block"))
         {
-            BlockManager blockManager = pickHitInfo.collider.gameObject.transform.parent.GetComponent<BlockManager>();
+            BlockManager blockManager = missHitInfo.collider.gameObject.transform.parent.GetComponent<BlockManager>();
             blockManager.DisableCollider();
             gameManager.BlockMissed();
         }

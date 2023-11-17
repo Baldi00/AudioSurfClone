@@ -32,8 +32,7 @@ public class PauseManager : MonoBehaviour
 
     public void RestartSong()
     {
-        audioSource.Stop();
-        audioSource.Play();
+        gameManager.RestartSong();
         SetPaused(false);
         SetCursorVisibility(false);
     }

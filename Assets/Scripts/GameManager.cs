@@ -56,8 +56,11 @@ public class GameManager : MonoBehaviour
     private BSpline trackSpline;
 
     private List<Vector3> trackSplinePoints;
+
+    private List<BlockManager> blocks;
     private List<BlockData> blocksData;
     private List<Transform> blocksTransforms;
+
     private NativeArray<Vector3> trackSplinePointsNativeArray;
     private NativeArray<BlockData> blocksDataNativeArray;
     private TransformAccessArray blocksTransformsAccessArray;
@@ -82,6 +85,7 @@ public class GameManager : MonoBehaviour
         colorSyncher.enabled = false;
         pauseManager.enabled = false;
 
+        blocks = new List<BlockManager>();
         blocksData = new List<BlockData>();
         blocksTransforms = new List<Transform>();
     }
@@ -106,6 +110,31 @@ public class GameManager : MonoBehaviour
 
         if (blocksTransformsAccessArray.isCreated)
             blocksTransformsAccessArray.Dispose();
+    }
+
+    public void RestartSong()
+    {
+        audioSource.Stop();
+        audioSource.Play();
+
+        playerController.enabled = false;
+        playerController.transform.position = Vector3.zero;
+
+        foreach (BlockManager blockManager in blocks)
+            blockManager.ResetBlock();
+
+        currentPoints = 0;
+        currentPointsIncrement = 1;
+
+        pointsUiText.text = $"{currentPoints}";
+        pointsPercentageUiText.text = (currentPoints * 100f / totalTrackPoints).ToString("0.00") + "%";
+
+        PointsIncrementUiMover[] pointsIncrementUiMovers = FindObjectsOfType<PointsIncrementUiMover>();
+
+        foreach (PointsIncrementUiMover pointsMover in pointsIncrementUiMovers)
+            DestroyImmediate(pointsMover.gameObject);
+
+        playerController.enabled = true;
     }
 
     public void BackToSelectMenu()
@@ -242,7 +271,10 @@ public class GameManager : MonoBehaviour
                 BlockManager.BlockPosition.CENTER : blockSpawnZPosition > 0 ? BlockManager.BlockPosition.LEFT :
                 BlockManager.BlockPosition.RIGHT;
 
-            block.GetComponent<BlockManager>().Initialize(blockPosition);
+            BlockManager blockManager = block.GetComponent<BlockManager>();
+            blockManager.Initialize(blockPosition);
+
+            blocks.Add(blockManager);
 
             blocksData.Add(new BlockData
             {
