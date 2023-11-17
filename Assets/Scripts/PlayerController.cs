@@ -49,7 +49,7 @@ public class PlayerController : MonoBehaviour
         currentAudioTimePercentage = gameManager.GetCurrentAudioTimePercentage();
 
         // Get Input
-        currentPlayerInputX = -Input.GetAxis("Mouse X") * Time.deltaTime * mouseSpeed;
+        currentPlayerInputX = -Input.GetAxis("Mouse X") * mouseSpeed * Time.timeScale;
         currentInputOffset += currentPlayerInputX *
             trackSpline.GetBitangentPerpendicularToTangent(currentAudioTimePercentage, Vector3.forward);
         currentInputOffset = Vector3.ClampMagnitude(currentInputOffset, maxInputOffset);

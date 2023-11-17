@@ -371,7 +371,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationToTangentSmoothness: 2.5
-  mouseSpeed: 75
+  mouseSpeed: 1
   maxInputOffset: 3
   minCameraDistancePosition: {x: 0, y: 1.376, z: -2.143}
   maxCameraDistancePosition: {x: 0, y: 2.424, z: -4.069}
