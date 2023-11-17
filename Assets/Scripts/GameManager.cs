@@ -253,6 +253,12 @@ public class GameManager : MonoBehaviour
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+
+        currentPoints = 0;
+        currentPointsIncrement = 1;
+
+        pointsUiText.text = $"{currentPoints}";
+        pointsPercentageUiText.text = (currentPoints * 100f / totalTrackPoints).ToString("0.00") + "%";
     }
 
     private void SpawnBlocks(List<int> beatIndexes, ref int spawnLocationNoise)
