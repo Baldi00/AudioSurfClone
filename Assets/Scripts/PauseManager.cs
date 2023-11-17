@@ -7,7 +7,13 @@ public class PauseManager : MonoBehaviour
     [SerializeField]
     private GameObject pauseCanvas;
 
+    private GameManager gameManager;
     private bool isPaused;
+
+    void Awake()
+    {
+        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+    }
 
     void Start()
     {
@@ -17,8 +23,11 @@ public class PauseManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && gameManager.IsGameRunning)
+        {
             SetPaused(!isPaused);
+            SetCursorVisibility(isPaused);
+        }
     }
 
     public void RestartSong()
@@ -26,14 +35,16 @@ public class PauseManager : MonoBehaviour
         audioSource.Stop();
         audioSource.Play();
         SetPaused(false);
+        SetCursorVisibility(false);
     }
 
     public void BackToSelectSongMenu()
     {
         SetPaused(false);
+        SetCursorVisibility(true);
         audioSource.Stop();
         audioSource.clip = null;
-        GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().BackToSelectMenu();
+        gameManager.BackToSelectMenu();
     }
 
     public void QuitGame()
@@ -50,10 +61,13 @@ public class PauseManager : MonoBehaviour
         else
             audioSource.UnPause();
 
-        Cursor.visible = isPaused ? true : false;
-        Cursor.lockState = isPaused ? CursorLockMode.None : CursorLockMode.Locked;
-
         Time.timeScale = isPaused ? 0 : 1;
         pauseCanvas.SetActive(isPaused);
+    }
+
+    private void SetCursorVisibility(bool visible)
+    {
+        Cursor.visible = visible;
+        Cursor.lockState = visible ? CursorLockMode.None : CursorLockMode.Locked;
     }
 }
