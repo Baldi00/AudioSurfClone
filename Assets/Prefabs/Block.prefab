@@ -133,6 +133,7 @@ MonoBehaviour:
   myCollider: {fileID: 6586311501814907437}
   goingUpAnimationSpeed: 10
   goingUpAnimationDuration: 0.1
+  defaultMaterial: {fileID: 2100000, guid: 84f570d55079b774ba8bd501b4c92fb1, type: 2}
 --- !u!1 &8324774944641631214
 GameObject:
   m_ObjectHideFlags: 0
