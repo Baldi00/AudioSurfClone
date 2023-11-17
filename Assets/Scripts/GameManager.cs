@@ -51,6 +51,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private List<ParticleSystem> leftFireworks;
     [SerializeField] private List<ParticleSystem> centerFireworks;
     [SerializeField] private List<ParticleSystem> rightFireworks;
+    [SerializeField] private RaysManager raysManager;
 
     private GameObject blocksContainer;
     private BSpline trackSpline;
@@ -254,6 +255,8 @@ public class GameManager : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
 
+        raysManager.Initialize(trackSpline, trackManager.GetNormalizedIntensities());
+
         currentPoints = 0;
         currentPointsIncrement = 1;
 
@@ -296,6 +299,9 @@ public class GameManager : MonoBehaviour
 
     public float GetCurrentAudioTimePercentage()
     {
+        if (!audioSource || !audioSource.clip)
+            return 0;
+
         return audioSource.time / audioSource.clip.length;
     }
 
