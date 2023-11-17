@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Reg = System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -25,16 +26,19 @@ public class FileBrowser : MonoBehaviour
     void Start()
     {
         foundMusicFiles = new Dictionary<string, string>();
-        SearchMusicFiles(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Music"));
+        SearchMusicFiles(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic)));
         SetupStartButtons();
     }
 
     public void UpdateCurrentPath(string newCurrentPath)
     {
+        if (!Directory.Exists(newCurrentPath))
+            return;
+
         distanceFromStartMenu++;
 
-        if (newCurrentPath == "C:")
-            newCurrentPath = "C:\\";
+        if (Reg.Regex.Match(newCurrentPath, "^[A-Z]:$").Success)
+            newCurrentPath += "\\";
 
         currentPath = newCurrentPath;
 
@@ -113,13 +117,13 @@ public class FileBrowser : MonoBehaviour
         musicFolder.InitializeButton(
             SelectFileButton.SelectButtonType.DIRECTORY,
             "Music",
-            () => UpdateCurrentPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Music")));
+            () => UpdateCurrentPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic))));
 
         SelectFileButton desktopFolder = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
         desktopFolder.InitializeButton(
             SelectFileButton.SelectButtonType.DIRECTORY,
             "Desktop",
-            () => UpdateCurrentPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Desktop")));
+            () => UpdateCurrentPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop))));
 
         foreach (DriveInfo drive in DriveInfo.GetDrives())
         {
@@ -133,6 +137,9 @@ public class FileBrowser : MonoBehaviour
 
     private void SearchMusicFiles(string startingPath)
     {
+        if (!Directory.Exists(startingPath))
+            return;
+
         foreach (string dir in Directory.GetDirectories(startingPath))
             SearchMusicFiles(Path.Combine(startingPath, dir));
 
