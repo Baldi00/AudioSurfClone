@@ -51,8 +51,13 @@ public class BlockManager : MonoBehaviour
     public void Pick()
     {
         enabled = true;
-        myCollider.enabled = false;
         xOffset = renderer.transform.position.x - playerTransform.position.x;
         yOffset = renderer.transform.position.y - playerTransform.position.y;
+        DisableCollider();
+    }
+
+    public void DisableCollider()
+    {
+        myCollider.enabled = false;
     }
 }

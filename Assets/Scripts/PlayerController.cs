@@ -133,6 +133,10 @@ public class PlayerController : MonoBehaviour
         if (Physics.SphereCast(previousPosition + spaceShipTransform.InverseTransformDirection(missSphereOffset), missSphereRadius,
             direction, out RaycastHit missHitInfo, distance) &&
             missHitInfo.collider.gameObject.CompareTag("Block"))
+        {
+            BlockManager blockManager = pickHitInfo.collider.gameObject.transform.parent.GetComponent<BlockManager>();
+            blockManager.DisableCollider();
             gameManager.BlockMissed();
+        }
     }
 }
