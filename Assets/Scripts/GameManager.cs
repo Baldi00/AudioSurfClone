@@ -46,6 +46,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private List<ParticleSystem> centerFireworks;
     [SerializeField] private List<ParticleSystem> rightFireworks;
     [SerializeField] private RaysManager raysManager;
+    [SerializeField] private GameObject hexagonSubwooferPrefab;
+    [SerializeField] private Material hexagonSubwooferMaterial;
+    [SerializeField] private float hexagonBeatDuration;
 
     private GameObject blocksContainer;
     private BSpline trackSpline;
@@ -68,6 +71,16 @@ public class GameManager : MonoBehaviour
 
     private int pointsIncrementUiSpawnPosition = 1;
 
+    private List<int> lowBeatIndexes;
+    private List<int> lowBeatIndexes2;
+    private List<int> highBeatIndexes;
+    private List<int> highBeatIndexes2;
+
+    private GameObject hexagonContainer;
+    private List<Transform> hexagonTransforms;
+    private float hexagonTimer;
+    private Vector3 hexagonStartScale;
+
     public bool IsGameRunning { get; private set; }
 
     void Awake()
@@ -83,6 +96,9 @@ public class GameManager : MonoBehaviour
         blocks = new List<BlockManager>();
         blocksData = new List<BlockData>();
         blocksTransforms = new List<Transform>();
+
+        hexagonTransforms = new List<Transform>();
+        hexagonStartScale = hexagonSubwooferPrefab.transform.localScale;
     }
 
     void Update()
@@ -91,8 +107,31 @@ public class GameManager : MonoBehaviour
             return;
 
         float currentPercentage = GetCurrentAudioTimePercentage();
-        blockMaterial.color = trackSpline.GetSplineColor(currentPercentage);
+        Color currentColor = trackSpline.GetSplineColor(currentPercentage);
+        hexagonSubwooferMaterial.color = currentColor;
+        blockMaterial.color = currentColor;
         UpdateBlocksPositions(currentPercentage);
+
+        trackSpline.GetSplineIndexes(currentPercentage, out int currentIndex, out _);
+        if (lowBeatIndexes2.Contains(currentIndex))
+        {
+            hexagonTimer = hexagonBeatDuration;
+            foreach (Transform hexagonTransform in hexagonTransforms)
+                hexagonTransform.localScale = hexagonStartScale * 1.5f;
+        }
+        else if (highBeatIndexes2.Contains(currentIndex) && hexagonTimer < hexagonBeatDuration / 2)
+        {
+            hexagonTimer = hexagonBeatDuration / 4;
+            foreach (Transform hexagonTransform in hexagonTransforms)
+                hexagonTransform.localScale = hexagonStartScale * 1.125f;
+        }
+        else if (hexagonTimer > 0)
+        {
+            hexagonTimer -= Time.deltaTime;
+
+            foreach (Transform hexagonTransform in hexagonTransforms)
+                hexagonTransform.localScale = hexagonStartScale * Mathf.Lerp(1f, 1.5f, hexagonTimer / hexagonBeatDuration);
+        }
     }
 
     void OnDestroy()
@@ -143,6 +182,9 @@ public class GameManager : MonoBehaviour
         Destroy(blocksContainer);
         blocksData.Clear();
         blocksTransforms.Clear();
+
+        Destroy(hexagonContainer);
+        hexagonTransforms.Clear();
 
         if (trackSplinePointsNativeArray.IsCreated)
             trackSplinePointsNativeArray.Dispose();
@@ -214,10 +256,10 @@ public class GameManager : MonoBehaviour
         blocksContainer = new GameObject("Blocks container");
         float[][] spectrum = AudioUtils.GetAudioSpectrumAmplitudes(audioSource.clip, 4096);
 
-        List<int> lowBeatIndexes =
-            AudioUtils.GetBeatIndexes(spectrum, audioSource.clip.frequency, audioSource.clip.channels, lowBeatFrequency, lowBeatThreshold, lowBeatSkip);
-        List<int> highBeatIndexes =
-            AudioUtils.GetBeatIndexes(spectrum, audioSource.clip.frequency, audioSource.clip.channels, highBeatFrequency, highBeatThreshold, highBeatSkip);
+        lowBeatIndexes = AudioUtils.GetBeatIndexes(spectrum, audioSource.clip.frequency, audioSource.clip.channels, lowBeatFrequency, lowBeatThreshold, lowBeatSkip);
+        lowBeatIndexes2 = AudioUtils.GetBeatIndexes(spectrum, audioSource.clip.frequency, audioSource.clip.channels, lowBeatFrequency, lowBeatThreshold, 0);
+        highBeatIndexes = AudioUtils.GetBeatIndexes(spectrum, audioSource.clip.frequency, audioSource.clip.channels, highBeatFrequency, highBeatThreshold, highBeatSkip);
+        highBeatIndexes2 = AudioUtils.GetBeatIndexes(spectrum, audioSource.clip.frequency, audioSource.clip.channels, highBeatFrequency, 0.01f, 0);
 
         RemoveNearBeats(lowBeatIndexes, highBeatIndexes, 5);
 
@@ -233,6 +275,14 @@ public class GameManager : MonoBehaviour
             trackSplinePoints = trackSplinePointsNativeArray,
             blocksData = blocksDataNativeArray
         };
+
+        // Hexagon subwoofer spawn
+        hexagonContainer = new GameObject("Hexagon container");
+        for (int i = 0; i < trackSplinePoints.Count; i += 128)
+        {
+            hexagonTransforms.Add(Instantiate(hexagonSubwooferPrefab, trackSplinePoints[i] + 50 * Vector3.forward + 3 * Vector3.up, Quaternion.Euler(0, 60, 0), hexagonContainer.transform).transform);
+            hexagonTransforms.Add(Instantiate(hexagonSubwooferPrefab, trackSplinePoints[i] - 50 * Vector3.forward + 3 * Vector3.up, Quaternion.Euler(0, 120, 0), hexagonContainer.transform).transform);
+        }
 
         // Final setup
         selectFileUi.SetActive(false);

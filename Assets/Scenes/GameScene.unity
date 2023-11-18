@@ -4244,6 +4244,11 @@ MonoBehaviour:
   - {fileID: 2117268757}
   - {fileID: 1106993982}
   raysManager: {fileID: 642526175}
+  hexagonSubwooferPrefab: {fileID: 667289278054755622, guid: 4cb2b476d018e4545b3b8e908e358f7e,
+    type: 3}
+  hexagonSubwooferMaterial: {fileID: 2100000, guid: 3a1cb3ec60110fc459919f60c637fa5a,
+    type: 2}
+  hexagonBeatDuration: 0.2
 --- !u!4 &1649067788
 Transform:
   m_ObjectHideFlags: 0
