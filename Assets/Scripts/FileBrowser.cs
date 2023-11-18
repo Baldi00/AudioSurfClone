@@ -56,7 +56,7 @@ public class FileBrowser : MonoBehaviour
 
         SelectFileButton backDir = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
         backDir.InitializeButton(
-            SelectFileButton.SelectButtonType.DIRECTORY,
+            SelectButtonType.DIRECTORY,
             "..Back",
             backActionCall);
 
@@ -64,7 +64,7 @@ public class FileBrowser : MonoBehaviour
         {
             SelectFileButton nextDir = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
             nextDir.InitializeButton(
-                SelectFileButton.SelectButtonType.DIRECTORY,
+                SelectButtonType.DIRECTORY,
                 dir[(dir.LastIndexOf("\\") + 1)..],
                 () => UpdateCurrentPath(Path.Combine(currentPath, dir)));
         }
@@ -74,7 +74,7 @@ public class FileBrowser : MonoBehaviour
             {
                 SelectFileButton nextFile = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
                 nextFile.InitializeButton(
-                    SelectFileButton.SelectButtonType.FILE,
+                    SelectButtonType.FILE,
                     file[(file.LastIndexOf("\\") + 1)..].Replace(".mp3", "").Replace(".wav", ""),
                     () => onAudioFileSelected.Invoke(Path.Combine(currentPath, file)));
             }
@@ -115,13 +115,13 @@ public class FileBrowser : MonoBehaviour
 
         SelectFileButton musicFolder = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
         musicFolder.InitializeButton(
-            SelectFileButton.SelectButtonType.DIRECTORY,
+            SelectButtonType.DIRECTORY,
             "Music",
             () => UpdateCurrentPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic))));
 
         SelectFileButton desktopFolder = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
         desktopFolder.InitializeButton(
-            SelectFileButton.SelectButtonType.DIRECTORY,
+            SelectButtonType.DIRECTORY,
             "Desktop",
             () => UpdateCurrentPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop))));
 
@@ -129,7 +129,7 @@ public class FileBrowser : MonoBehaviour
         {
             SelectFileButton currentDriveButton = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
             currentDriveButton.InitializeButton(
-                SelectFileButton.SelectButtonType.DIRECTORY,
+                SelectButtonType.DIRECTORY,
                 drive.Name,
                 () => UpdateCurrentPath(drive.RootDirectory.FullName));
         }
@@ -159,7 +159,7 @@ public class FileBrowser : MonoBehaviour
 
         SelectFileButton backDir = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
         backDir.InitializeButton(
-            SelectFileButton.SelectButtonType.DIRECTORY,
+            SelectButtonType.DIRECTORY,
             "..Back",
             () => SetupStartButtons());
 
@@ -169,7 +169,7 @@ public class FileBrowser : MonoBehaviour
             {
                 SelectFileButton songFile = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
                 songFile.InitializeButton(
-                    SelectFileButton.SelectButtonType.FILE,
+                    SelectButtonType.FILE,
                     fileName,
                     () => onAudioFileSelected.Invoke(foundMusicFiles[fileName]));
             }

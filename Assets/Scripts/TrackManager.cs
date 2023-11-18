@@ -45,7 +45,7 @@ public class TrackManager : MonoBehaviour
 
     public void GenerateTrack(AudioClip audioClip, int windowSize)
     {
-        float[] intensities = AudioAnalyzer.GetAudioIntensities(audioClip, windowSize);
+        float[] intensities = AudioUtils.GetAudioIntensities(audioClip, windowSize);
 
         normalizedIntensities = new float[intensities.Length];
         Vector3[] intensityPoints = new Vector3[intensities.Length];
@@ -97,15 +97,5 @@ public class TrackManager : MonoBehaviour
         meshFilter.mesh = trackSpline.GetSplineMesh(trackMeshResolution, trackMeshThickness, trackMeshBitangent);
 
         GetComponent<MeshRenderer>().material.SetFloat("_LineSubdivisions", 3000f * audioClip.length / 160f);
-    }
-
-    private void VisualizeAudioSpectrum(AudioClip audioClip, int frequency, int windowSize)
-    {
-        float[][] spectrum = AudioAnalyzer.GetAudioSpectrum(audioClip, windowSize);
-        int frequencyIndex = (int)(128f / (20000 - 20) * frequency);
-        Vector3[] frequencyPoints = new Vector3[spectrum.Length];
-        for (int i = 0; i < spectrum.Length; i++)
-            frequencyPoints[i] = new Vector3(300f * i / spectrum.Length, (float)spectrum[i][frequencyIndex]);
-        // Spline visualization
     }
 }

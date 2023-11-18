@@ -10,12 +10,6 @@ using UnityEngine.Jobs;
 
 public class GameManager : MonoBehaviour
 {
-    private struct BlockData
-    {
-        public float endPercentage;
-        public float zPosition;
-    }
-
     [SerializeField] private AudioSource audioSource;
 
     [SerializeField] private PlayerController playerController;
@@ -160,7 +154,7 @@ public class GameManager : MonoBehaviour
             blocksTransformsAccessArray.Dispose();
     }
 
-    public void BlockPicked(BlockManager.BlockPosition blockPosition)
+    public void BlockPicked(BlockPosition blockPosition)
     {
         currentPoints += currentPointsIncrement;
 
@@ -208,7 +202,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator LoadAudioAndStartGame(string songPath)
     {
-        yield return StartCoroutine(AudioLoader.LoadAudio("file:\\\\" + songPath, audioSource));
+        yield return StartCoroutine(AudioUtils.LoadAudio("file:\\\\" + songPath, audioSource));
 
         trackManager.GenerateTrack(audioSource.clip, 4096);
         trackSpline = trackManager.GetTrackSpline();
@@ -218,12 +212,12 @@ public class GameManager : MonoBehaviour
 
         // Spawn blocks
         blocksContainer = new GameObject("Blocks container");
-        float[][] spectrum = AudioAnalyzer.GetAudioSpectrum(audioSource.clip, 4096);
+        float[][] spectrum = AudioUtils.GetAudioSpectrumAmplitudes(audioSource.clip, 4096);
 
         List<int> lowBeatIndexes =
-            BeatDetector.GetBeatIndexes(spectrum, 4096, audioSource.clip, lowBeatFrequency, lowBeatThreshold, lowBeatSkip);
+            AudioUtils.GetBeatIndexes(spectrum, audioSource.clip.frequency, audioSource.clip.channels, lowBeatFrequency, lowBeatThreshold, lowBeatSkip);
         List<int> highBeatIndexes =
-            BeatDetector.GetBeatIndexes(spectrum, 4096, audioSource.clip, highBeatFrequency, highBeatThreshold, highBeatSkip);
+            AudioUtils.GetBeatIndexes(spectrum, audioSource.clip.frequency, audioSource.clip.channels, highBeatFrequency, highBeatThreshold, highBeatSkip);
 
         RemoveNearBeats(lowBeatIndexes, highBeatIndexes, 5);
 
@@ -276,20 +270,18 @@ public class GameManager : MonoBehaviour
                 Quaternion.LookRotation(trackSpline.GetSplineTangent(percentage), Vector3.up),
                 blocksContainer.transform);
 
-            BlockManager.BlockPosition blockPosition = Mathf.Approximately(blockSpawnZPosition, 0) ?
-                BlockManager.BlockPosition.CENTER : blockSpawnZPosition > 0 ? BlockManager.BlockPosition.LEFT :
-                BlockManager.BlockPosition.RIGHT;
+            BlockPosition blockPosition = BlockPosition.CENTER;
+            if (blockSpawnZPosition > Mathf.Epsilon)
+                blockPosition = BlockPosition.LEFT;
+            else if (blockSpawnZPosition < -Mathf.Epsilon)
+                blockPosition = BlockPosition.RIGHT;
 
             BlockManager blockManager = block.GetComponent<BlockManager>();
-            blockManager.Initialize(blockPosition);
+            blockManager.Initialize(blockPosition, percentage);
 
             blocks.Add(blockManager);
 
-            blocksData.Add(new BlockData
-            {
-                endPercentage = percentage,
-                zPosition = blockSpawnZPosition
-            });
+            blocksData.Add(blockManager.GetBlockData(maxDistanceFromCenter));
 
             blocksTransforms.Add(block.transform);
 
@@ -374,13 +366,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void EmitFireworks(BlockManager.BlockPosition blockPosition)
+    private void EmitFireworks(BlockPosition blockPosition)
     {
         List<ParticleSystem> currentParticleSystem = blockPosition switch
         {
-            BlockManager.BlockPosition.LEFT => leftFireworks,
-            BlockManager.BlockPosition.CENTER => centerFireworks,
-            BlockManager.BlockPosition.RIGHT => rightFireworks,
+            BlockPosition.LEFT => leftFireworks,
+            BlockPosition.CENTER => centerFireworks,
+            BlockPosition.RIGHT => rightFireworks,
             _ => null,
         };
 

@@ -6,6 +6,4 @@ public class FPSShow : MonoBehaviour
     {
         GUI.Label(new Rect(10, 10, 100, 50), $"{Time.unscaledDeltaTime * 1000}ms, {1 / Time.unscaledDeltaTime}fps");
     }
-
-
 }

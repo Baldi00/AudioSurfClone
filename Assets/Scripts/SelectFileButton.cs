@@ -5,12 +5,6 @@ using UnityEngine.UI;
 
 public class SelectFileButton : MonoBehaviour
 {
-    public enum SelectButtonType
-    {
-        FILE,
-        DIRECTORY
-    }
-
     [SerializeField]
     private TextMeshProUGUI innerText;
     [SerializeField]
