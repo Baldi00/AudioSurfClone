@@ -278,10 +278,10 @@ public class GameManager : MonoBehaviour
 
         // Hexagon subwoofer spawn
         hexagonContainer = new GameObject("Hexagon container");
-        for (int i = 0; i < trackSplinePoints.Count; i += 128)
+        for (int i = 0; i < trackSplinePoints.Count; i += 64)
         {
-            hexagonTransforms.Add(Instantiate(hexagonSubwooferPrefab, trackSplinePoints[i] + 50 * Vector3.forward + 3 * Vector3.up, Quaternion.Euler(0, 60, 0), hexagonContainer.transform).transform);
-            hexagonTransforms.Add(Instantiate(hexagonSubwooferPrefab, trackSplinePoints[i] - 50 * Vector3.forward + 3 * Vector3.up, Quaternion.Euler(0, 120, 0), hexagonContainer.transform).transform);
+            hexagonTransforms.Add(Instantiate(hexagonSubwooferPrefab, trackSplinePoints[i] + 50 * Vector3.forward + 4 * Vector3.up, Quaternion.Euler(0, 60, 0), hexagonContainer.transform).transform);
+            hexagonTransforms.Add(Instantiate(hexagonSubwooferPrefab, trackSplinePoints[i] - 50 * Vector3.forward + 4 * Vector3.up, Quaternion.Euler(0, 120, 0), hexagonContainer.transform).transform);
         }
 
         // Final setup

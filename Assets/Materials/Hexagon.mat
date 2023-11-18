@@ -113,7 +113,7 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _LightingEnabled: 0
-    - _MaxDistance: 300
+    - _MaxDistance: 250
     - _Metallic: 0
     - _MinDistance: 100
     - _Mode: 1
