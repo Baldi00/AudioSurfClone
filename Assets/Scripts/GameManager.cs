@@ -50,6 +50,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Material hexagonSubwooferMaterial;
     [SerializeField] private float hexagonBeatDuration;
 
+    [SerializeField] private LineRenderer trackVisualizer;
+
     private GameObject blocksContainer;
     private BSpline trackSpline;
 
@@ -283,6 +285,29 @@ public class GameManager : MonoBehaviour
             hexagonTransforms.Add(Instantiate(hexagonSubwooferPrefab, trackSplinePoints[i] + 50 * Vector3.forward + 4 * Vector3.up, Quaternion.Euler(0, 60, 0), hexagonContainer.transform).transform);
             hexagonTransforms.Add(Instantiate(hexagonSubwooferPrefab, trackSplinePoints[i] - 50 * Vector3.forward + 4 * Vector3.up, Quaternion.Euler(0, 120, 0), hexagonContainer.transform).transform);
         }
+
+        // Track
+        float trackVisualizerWidth = (trackVisualizer.transform as RectTransform).rect.width;
+        float trackVisualizerHeight = (trackVisualizer.transform as RectTransform).rect.height;
+        float minTrackX, minTrackY, maxTrackX, maxTrackY;
+        minTrackX = minTrackY = float.MaxValue;
+        maxTrackX = maxTrackY = float.MinValue;
+
+        for (int i = 0; i < trackSplinePoints.Count; i++)
+        {
+            if (trackSplinePoints[i].x < minTrackX)
+                minTrackX = trackSplinePoints[i].x;
+            if (trackSplinePoints[i].x > maxTrackX)
+                maxTrackX = trackSplinePoints[i].x;
+            if (trackSplinePoints[i].y < minTrackY)
+                minTrackY = trackSplinePoints[i].y;
+            if (trackSplinePoints[i].y > maxTrackY)
+                maxTrackY = trackSplinePoints[i].y;
+        }
+
+        trackVisualizer.positionCount = (int)((float)trackSplinePoints.Count / 20);
+        for (int i = 0; i < trackSplinePoints.Count; i += 20)
+            trackVisualizer.SetPosition((int)(i / 20f), new Vector3(((float)i / trackSplinePoints.Count) * trackVisualizerWidth, -trackVisualizerHeight * (1 - Mathf.InverseLerp(minTrackY, maxTrackY, trackSplinePoints[i].y))));
 
         // Final setup
         selectFileUi.SetActive(false);
