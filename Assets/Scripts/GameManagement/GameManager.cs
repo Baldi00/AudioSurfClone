@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI songNameUiText;
     [SerializeField] private TextMeshProUGUI pointsUiText;
     [SerializeField] private TextMeshProUGUI pointsPercentageUiText;
+    [SerializeField] private TextMeshProUGUI songTimeUi;
     [SerializeField] private GameObject pointsIncrementPrefab;
     [SerializeField] private float pointsIncrementDistanceFromCenter;
 
@@ -154,8 +155,11 @@ public class GameManager : MonoBehaviour
         float subSplineInterpolator = lerp % 1;
         trackCurrentPointVisualizer.localPosition = Vector3.Lerp(trackVisualizer.GetPosition(firstSubSplinePointIndex), trackVisualizer.GetPosition(firstSubSplinePointIndex + 1), subSplineInterpolator);
 
+        // Update song time
+        songTimeUi.text = $"{(int)(audioSource.clip.length * currentPercentage / 60)}:{(int)(audioSource.clip.length * currentPercentage % 60):00} / {(int)(audioSource.clip.length / 60)}:{(int)(audioSource.clip.length % 60):00}";
+
         // End song detection
-        if (previousAudioSourcePlaying && !audioSource.isPlaying && (previousAudioSourcePercentage > GetCurrentAudioTimePercentage() || GetCurrentAudioTimePercentage() >= 1))
+        if (previousAudioSourcePlaying && !audioSource.isPlaying && (previousAudioSourcePercentage > currentPercentage || currentPercentage >= 1))
         {
             IsGameRunning = false;
             Cursor.visible = true;
@@ -165,7 +169,7 @@ public class GameManager : MonoBehaviour
             endSongUi.SetActive(true);
         }
 
-        previousAudioSourcePercentage = GetCurrentAudioTimePercentage();
+        previousAudioSourcePercentage = currentPercentage;
         previousAudioSourcePlaying = audioSource.isPlaying;
     }
 
