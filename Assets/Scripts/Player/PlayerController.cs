@@ -120,8 +120,6 @@ public class PlayerController : MonoBehaviour
         Vector3 direction = (nextPosition - previousPosition).normalized;
         float distance = (nextPosition - previousPosition).magnitude;
 
-        Debug.DrawRay(previousPosition + spaceShipTransform.InverseTransformDirection(missSphereOffset), nextPosition - previousPosition, Color.magenta, 3);
-
         if (Physics.SphereCast(previousPosition + spaceShipTransform.InverseTransformDirection(pickSphereOffset), pickSphereRadius,
             direction, out RaycastHit pickHitInfo, distance) &&
             pickHitInfo.collider.gameObject.CompareTag("Block"))

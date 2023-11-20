@@ -192,6 +192,7 @@ public class GameManager : MonoBehaviour
         pauseManager.enabled = false;
         playerController.StopFollowinTrack();
         Destroy(blocksContainer);
+        blocks.Clear();
         blocksData.Clear();
         blocksTransforms.Clear();
 
