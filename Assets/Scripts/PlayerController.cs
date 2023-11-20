@@ -54,20 +54,20 @@ public class PlayerController : MonoBehaviour
             trackSpline.GetBitangentPerpendicularToTangent(currentAudioTimePercentage, Vector3.forward);
         currentInputOffset = Vector3.ClampMagnitude(currentInputOffset, maxInputOffset);
 
-        currentPoint = trackSpline.GetSplinePoint(currentAudioTimePercentage);
-        currentTangent = trackSpline.GetSplineTangent(currentAudioTimePercentage);
+        currentPoint = trackSpline.GetPointAt(currentAudioTimePercentage);
+        currentTangent = trackSpline.GetTangentAt(currentAudioTimePercentage);
 
         DoCollisionWithBlockChecks(transform.position, currentPoint + currentInputOffset);
 
         transform.position = currentPoint + currentInputOffset;
         transform.forward = Vector3.Lerp(transform.forward, currentTangent, rotationToTangentSmoothness * Time.deltaTime);
 
-        Color.RGBToHSV(trackSpline.GetSplineColor(currentAudioTimePercentage), out currentColorHue, out _, out _);
+        Color.RGBToHSV(trackSpline.GetColorAt(currentAudioTimePercentage), out currentColorHue, out _, out _);
         currentSpeed = Mathf.InverseLerp(0.83f, 0f, currentColorHue);
 
         playerCameraTransform.localPosition = Vector3.Lerp(maxCameraDistancePosition, minCameraDistancePosition, currentSpeed);
 
-        trackSpline.GetSplineIndexes(currentAudioTimePercentage, out int u, out _);
+        trackSpline.GetSubSplineIndexes(currentAudioTimePercentage, out int u, out _);
         bool doBeat = !beatDone && previousU != u && u < normalizedIntensities.Length && normalizedIntensities[u] - normalizedIntensities[u + 1] <= -0.1f;
 
         for (int i = 0; i < rocketFires.Count; i++)
@@ -98,7 +98,7 @@ public class PlayerController : MonoBehaviour
     {
         this.trackSpline = trackSpline;
 
-        transform.position = trackSpline.GetSplinePoint(0);
+        transform.position = trackSpline.GetPointAt(0);
         transform.forward = Vector3.right;
 
         followTrack = true;

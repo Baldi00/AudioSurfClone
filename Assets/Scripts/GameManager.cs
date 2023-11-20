@@ -109,12 +109,12 @@ public class GameManager : MonoBehaviour
             return;
 
         float currentPercentage = GetCurrentAudioTimePercentage();
-        Color currentColor = trackSpline.GetSplineColor(currentPercentage);
+        Color currentColor = trackSpline.GetColorAt(currentPercentage);
         hexagonSubwooferMaterial.color = currentColor;
         blockMaterial.color = currentColor;
         UpdateBlocksPositions(currentPercentage);
 
-        trackSpline.GetSplineIndexes(currentPercentage, out int currentIndex, out _);
+        trackSpline.GetSubSplineIndexes(currentPercentage, out int currentIndex, out _);
         if (lowBeatIndexes2.Contains(currentIndex))
         {
             hexagonTimer = hexagonBeatDuration;
@@ -250,7 +250,7 @@ public class GameManager : MonoBehaviour
 
         trackManager.GenerateTrack(audioSource.clip, 4096);
         trackSpline = trackManager.GetTrackSpline();
-        trackSplinePoints = trackSpline.GetSplinePoints();
+        trackSplinePoints = trackSpline.GetPoints();
 
         songNameUiText.text = songPath[(songPath.LastIndexOf("\\") + 1)..].Replace(".mp3", "").Replace(".wav", "");
 
@@ -337,12 +337,13 @@ public class GameManager : MonoBehaviour
     {
         foreach (int beatIndex in beatIndexes)
         {
-            float percentage = trackSpline.GetSplinePercentageFromTrackIndex(beatIndex + 4);
+            // 4 is due to spline correction
+            float percentage = (float)(beatIndex + 4) / (trackSplinePoints.Count - 4);
             float blockSpawnZPosition = ((beatIndex + spawnLocationNoise) % 3 - 1) * maxDistanceFromCenter;
 
             GameObject block = Instantiate(blockPrefab,
-                trackSpline.GetSplinePoint(percentage) + Vector3.forward * blockSpawnZPosition,
-                Quaternion.LookRotation(trackSpline.GetSplineTangent(percentage), Vector3.up),
+                trackSpline.GetPointAt(percentage) + Vector3.forward * blockSpawnZPosition,
+                Quaternion.LookRotation(trackSpline.GetTangentAt(percentage), Vector3.up),
                 blocksContainer.transform);
 
             BlockPosition blockPosition = BlockPosition.CENTER;
@@ -374,7 +375,7 @@ public class GameManager : MonoBehaviour
 
     public Color GetCurrentColor()
     {
-        return trackSpline.GetSplineColor(GetCurrentAudioTimePercentage());
+        return trackSpline.GetColorAt(GetCurrentAudioTimePercentage());
     }
 
     private void RemoveNearBeats(List<int> baseBeats, List<int> additiveBeats, int range)
