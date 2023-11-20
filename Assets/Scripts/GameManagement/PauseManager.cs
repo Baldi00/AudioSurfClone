@@ -10,7 +10,7 @@ public class PauseManager : MonoBehaviour
 
     void Awake()
     {
-        gameManager = Utils.GetGameManager();
+        gameManager = GameManager.GetGameManager();
     }
 
     void Start()

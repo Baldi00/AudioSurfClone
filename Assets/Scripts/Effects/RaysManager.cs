@@ -29,7 +29,7 @@ public class RaysManager : MonoBehaviour
     void Awake()
     {
         rays = new List<LineRenderer>();
-        gameManager = Utils.GetGameManager();
+        gameManager = GameManager.GetGameManager();
         SpawnRays();
     }
 

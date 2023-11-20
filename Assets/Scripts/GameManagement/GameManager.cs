@@ -147,6 +147,11 @@ public class GameManager : MonoBehaviour
             blocksTransformsAccessArray.Dispose();
     }
 
+    public static GameManager GetGameManager()
+    {
+        return GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+    }
+
     public void RestartSong()
     {
         audioSource.Stop();

@@ -15,7 +15,7 @@ public class PlayerColorSyncher : MonoBehaviour, IColorSynchable
     {
         spaceshipMaterials = new List<Material>();
         spaceshipRenderer.GetSharedMaterials(spaceshipMaterials);
-        GameManager gameManager = Utils.GetGameManager();
+        GameManager gameManager = GameManager.GetGameManager();
         gameManager.AddToColorSyncher(this);
     }
 

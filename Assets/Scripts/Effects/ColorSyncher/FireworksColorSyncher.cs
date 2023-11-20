@@ -11,7 +11,7 @@ public class FireworksColorSyncher : MonoBehaviour, IColorSynchable
     {
         particleSystem = GetComponent<ParticleSystem>();
 
-        GameManager gameManager = Utils.GetGameManager();
+        GameManager gameManager = GameManager.GetGameManager();
         gameManager.AddToColorSyncher(this);
     }
 
