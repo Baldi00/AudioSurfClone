@@ -2,7 +2,7 @@ using UnityEngine;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(ParticleSystem))]
-public class FireworksSubEmitter : MonoBehaviour
+public class FireworksSubEmitterTriggerer : MonoBehaviour
 {
     [SerializeField] private float interval;
 
