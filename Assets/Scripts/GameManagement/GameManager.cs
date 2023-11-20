@@ -51,6 +51,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float hexagonBeatDuration;
 
     [SerializeField] private LineRenderer trackVisualizer;
+    [SerializeField] private RectTransform trackCurrentPointVisualizer;
 
     private GameObject blocksContainer;
     private BSpline trackSpline;
@@ -133,6 +134,11 @@ public class GameManager : MonoBehaviour
             foreach (Transform hexagonTransform in hexagonTransforms)
                 hexagonTransform.localScale = hexagonStartScale * Mathf.Lerp(1f, 1.5f, hexagonTimer / hexagonBeatDuration);
         }
+
+        float lerp = Mathf.Lerp(0, trackVisualizer.positionCount - 2, currentPercentage);
+        int firstSubSplinePointIndex = (int)lerp;
+        float subSplineInterpolator = lerp % 1;
+        trackCurrentPointVisualizer.localPosition = Vector3.Lerp(trackVisualizer.GetPosition(firstSubSplinePointIndex), trackVisualizer.GetPosition(firstSubSplinePointIndex + 1), subSplineInterpolator);
     }
 
     void OnDestroy()
@@ -314,9 +320,10 @@ public class GameManager : MonoBehaviour
                 maxTrackY = trackSplinePoints[i].y;
         }
 
-        trackVisualizer.positionCount = (int)((float)trackSplinePoints.Count / 20);
-        for (int i = 0; i < trackSplinePoints.Count; i += 20)
-            trackVisualizer.SetPosition((int)(i / 20f), new Vector3(((float)i / trackSplinePoints.Count) * trackVisualizerWidth, -trackVisualizerHeight * (1 - Mathf.InverseLerp(minTrackY, maxTrackY, trackSplinePoints[i].y))));
+        trackVisualizer.positionCount = (int)(trackSplinePoints.Count / 50f);
+        float step = 1f / trackVisualizer.positionCount;
+        for (int i = 0; i < trackVisualizer.positionCount; i++)
+            trackVisualizer.SetPosition(i, new Vector3(i * step * trackVisualizerWidth, -trackVisualizerHeight * (1 - Mathf.InverseLerp(minTrackY, maxTrackY, trackSplinePoints[i * 50].y))));
 
         // Final setup
         selectFileUi.SetActive(false);
