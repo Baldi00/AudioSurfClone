@@ -3,7 +3,6 @@ using UnityEngine;
 [RequireComponent(typeof(ParticleSystem))]
 public class FireworksColorSyncher : MonoBehaviour, IColorSynchable
 {
-    [SerializeField] private ColorSyncher colorSyncher;
     [SerializeField] private float colorDelta;
 
     private new ParticleSystem particleSystem;
@@ -11,7 +10,9 @@ public class FireworksColorSyncher : MonoBehaviour, IColorSynchable
     void Awake()
     {
         particleSystem = GetComponent<ParticleSystem>();
-        colorSyncher.AddColorSynchable(this);
+
+        GameManager gameManager = Utils.GetGameManager();
+        gameManager.AddToColorSyncher(this);
     }
 
     public void SyncColor(Color color)

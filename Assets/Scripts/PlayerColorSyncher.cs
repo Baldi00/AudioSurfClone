@@ -3,14 +3,10 @@ using UnityEngine;
 
 public class PlayerColorSyncher : MonoBehaviour, IColorSynchable
 {
-    [SerializeField]
-    private MeshRenderer spaceshipRenderer;
-    [SerializeField]
-    private Light spaceshipLight;
-    [SerializeField]
-    private List<int> materialsToUpdateIndexes;
-    [SerializeField]
-    private Material rocketFireMaterial;
+    [SerializeField] private MeshRenderer spaceshipRenderer;
+    [SerializeField] private Light spaceshipLight;
+    [SerializeField] private List<int> materialsToUpdateIndexes;
+    [SerializeField] private Material rocketFireMaterial;
 
     // Cache
     private List<Material> spaceshipMaterials;
@@ -19,6 +15,8 @@ public class PlayerColorSyncher : MonoBehaviour, IColorSynchable
     {
         spaceshipMaterials = new List<Material>();
         spaceshipRenderer.GetSharedMaterials(spaceshipMaterials);
+        GameManager gameManager = Utils.GetGameManager();
+        gameManager.AddToColorSyncher(this);
     }
 
     public void SyncColor(Color color)

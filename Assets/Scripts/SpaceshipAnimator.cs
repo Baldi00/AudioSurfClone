@@ -2,22 +2,14 @@ using UnityEngine;
 
 public class SpaceshipAnimator : MonoBehaviour
 {
-    [SerializeField]
-    private Vector3 positionOffset = Vector3.up * 0.1f;
-    [SerializeField]
-    private float pitchAmplitude = 10f;
-    [SerializeField]
-    private float pitchFrequency = 1f;
-    [SerializeField]
-    private float floatingAmplitude = 0.2f;
-    [SerializeField]
-    private float floatingFrequency = 5f;
-    [SerializeField]
-    private float rollMultiplier = 30000f;
-    [SerializeField]
-    private float maxRoll = 30f;
-    [SerializeField, Range(0, 1)]
-    private float rollSmoothing = 0.975f;
+    [SerializeField] private Vector3 positionOffset = Vector3.up * 0.1f;
+    [SerializeField] private float pitchAmplitude = 10f;
+    [SerializeField] private float pitchFrequency = 1f;
+    [SerializeField] private float floatingAmplitude = 0.2f;
+    [SerializeField] private float floatingFrequency = 5f;
+    [SerializeField] private float rollMultiplier = 30000f;
+    [SerializeField] private float maxRoll = 30f;
+    [SerializeField, Range(0, 1)] private float rollSmoothing = 0.975f;
 
     // Cache
     private float currentPitch;

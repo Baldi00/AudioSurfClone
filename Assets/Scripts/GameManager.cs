@@ -90,8 +90,7 @@ public class GameManager : MonoBehaviour
         IsGameRunning = false;
 
         fileBrowser.AddOnAudioFileSelectedListener((songPath) => StartCoroutine(LoadAudioAndStartGame(songPath)));
-        PlayerColorSyncher playerColorSyncher = playerController.GetComponent<PlayerColorSyncher>();
-        colorSyncher.AddColorSynchable(playerColorSyncher);
+
         colorSyncher.enabled = false;
         pauseManager.enabled = false;
 
@@ -242,6 +241,11 @@ public class GameManager : MonoBehaviour
         currentPointsIncrement = 1;
         pointsUiText.text = $"{currentPoints}";
         pointsPercentageUiText.text = (currentPoints * 100f / totalTrackPoints).ToString("0.00") + "%";
+    }
+
+    public void AddToColorSyncher(IColorSynchable colorSynchable)
+    {
+        colorSyncher.AddColorSynchable(colorSynchable);
     }
 
     private IEnumerator LoadAudioAndStartGame(string songPath)

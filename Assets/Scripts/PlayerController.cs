@@ -38,7 +38,7 @@ public class PlayerController : MonoBehaviour
 
     void Awake()
     {
-        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+        gameManager = Utils.GetGameManager();
     }
 
     void Update()
@@ -70,22 +70,22 @@ public class PlayerController : MonoBehaviour
         trackSpline.GetSubSplineIndexes(currentAudioTimePercentage, out int u, out _);
         bool doBeat = !beatDone && previousU != u && u < normalizedIntensities.Length && normalizedIntensities[u] - normalizedIntensities[u + 1] <= -0.1f;
 
-        for (int i = 0; i < rocketFires.Count; i++)
+        foreach (ParticleSystem rocketFire in rocketFires)
         {
-            ParticleSystem.MainModule main = rocketFires[i].main;
+            ParticleSystem.MainModule main = rocketFire.main;
 
             if (normalizedIntensities[u] <= 0.1f)
-                rocketFires[i].Stop();
+                rocketFire.Stop();
             else if (doBeat)
             {
-                rocketFires[i].Stop();
+                rocketFire.Stop();
                 main.startDelay = 0.005f;
                 beatDone = true;
                 previousU = u;
             }
-            else if (!rocketFires[i].isPlaying)
+            else if (!rocketFire.isPlaying)
             {
-                rocketFires[i].Play();
+                rocketFire.Play();
                 main.startDelay = 0f;
                 beatDone = false;
             }

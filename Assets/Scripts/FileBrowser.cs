@@ -8,12 +8,9 @@ using UnityEngine.Events;
 
 public class FileBrowser : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject buttonsContainer;
-    [SerializeField]
-    private GameObject buttonPrefab;
-    [SerializeField]
-    private GameObject searchBarPrefab;
+    [SerializeField] private GameObject buttonsContainer;
+    [SerializeField] private GameObject buttonPrefab;
+    [SerializeField] private GameObject searchBarPrefab;
 
     private string currentPath = "C:\\";
     private int distanceFromStartMenu;

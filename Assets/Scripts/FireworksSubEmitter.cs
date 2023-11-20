@@ -6,12 +6,12 @@ public class FireworksSubEmitter : MonoBehaviour
 {
     [SerializeField] private float interval;
 
-    private ParticleSystem ps;
+    private new ParticleSystem particleSystem;
     private float timer;
 
     void Awake()
     {
-        ps = GetComponent<ParticleSystem>();
+        particleSystem = GetComponent<ParticleSystem>();
     }
 
     void Update()
@@ -19,7 +19,7 @@ public class FireworksSubEmitter : MonoBehaviour
         timer += Time.deltaTime;
         while (timer >= interval)
         {
-            ps.TriggerSubEmitter(0);
+            particleSystem.TriggerSubEmitter(0);
             timer -= interval;
         }
     }

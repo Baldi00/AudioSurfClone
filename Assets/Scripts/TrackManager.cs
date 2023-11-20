@@ -3,24 +3,16 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter))]
 public class TrackManager : MonoBehaviour
 {
-    [SerializeField, Range(1, 100000)]
-    private int trackMeshResolution = 256;
-    [SerializeField, Range(0.01f, 10f)]
-    private float trackMeshThickness = 5;
-    [SerializeField]
-    private Vector3 trackMeshBitangent = Vector3.forward;
+    [SerializeField, Range(1, 100000)] private int trackMeshResolution = 256;
+    [SerializeField, Range(0.01f, 10f)] private float trackMeshThickness = 5;
+    [SerializeField] private Vector3 trackMeshBitangent = Vector3.forward;
 
-    [SerializeField, Range(0.001f, 0.999f)]
-    private float slopeSmoothness = 0.925f;
-    [SerializeField]
-    private float minSlopeIntensity = 0.6f;
-    [SerializeField]
-    private float maxSlopeIntensity = 1.2f;
+    [SerializeField, Range(0.001f, 0.999f)] private float slopeSmoothness = 0.925f;
+    [SerializeField] private float minSlopeIntensity = 0.6f;
+    [SerializeField] private float maxSlopeIntensity = 1.2f;
 
-    [SerializeField]
-    private float minSpeed = 0.3f;
-    [SerializeField]
-    private float maxSpeed = 3f;
+    [SerializeField] private float minSpeed = 0.3f;
+    [SerializeField] private float maxSpeed = 3f;
 
     private MeshFilter meshFilter;
     private BSpline trackSpline;

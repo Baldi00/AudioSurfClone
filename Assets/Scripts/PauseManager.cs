@@ -2,17 +2,15 @@ using UnityEngine;
 
 public class PauseManager : MonoBehaviour
 {
-    [SerializeField]
-    private AudioSource audioSource;
-    [SerializeField]
-    private GameObject pauseCanvas;
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private GameObject pauseCanvas;
 
     private GameManager gameManager;
     private bool isPaused;
 
     void Awake()
     {
-        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+        gameManager = Utils.GetGameManager();
     }
 
     void Start()

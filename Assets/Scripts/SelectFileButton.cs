@@ -5,16 +5,11 @@ using UnityEngine.UI;
 
 public class SelectFileButton : MonoBehaviour
 {
-    [SerializeField]
-    private TextMeshProUGUI innerText;
-    [SerializeField]
-    private Button button;
-    [SerializeField]
-    private Image icon;
-    [SerializeField]
-    private Sprite fileSprite;
-    [SerializeField]
-    private Sprite directorySprite;
+    [SerializeField] private TextMeshProUGUI innerText;
+    [SerializeField] private Button button;
+    [SerializeField] private Image icon;
+    [SerializeField] private Sprite fileSprite;
+    [SerializeField] private Sprite directorySprite;
 
     public void InitializeButton(SelectButtonType type, string innerText, UnityAction actionCall)
     {

@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// At every update syncs the colors on the registered items
+/// </summary>
 public class ColorSyncher : MonoBehaviour
 {
     private List<IColorSynchable> colorSynchables;
@@ -11,24 +14,23 @@ public class ColorSyncher : MonoBehaviour
 
     void Awake()
     {
-        gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
+        gameManager = Utils.GetGameManager();
     }
 
     void Update()
     {
         currentColor = gameManager.GetCurrentColor();
-        for (int i = 0; i < colorSynchables.Count; i++)
-            colorSynchables[i].SyncColor(currentColor);
+        foreach (IColorSynchable colorSynchable in colorSynchables)
+            colorSynchable.SyncColor(currentColor);
     }
 
+    /// <summary>
+    /// Adds a color syncable to the list of items to sync
+    /// </summary>
+    /// <param name="colorSynchable">The item to sync color on</param>
     public void AddColorSynchable(IColorSynchable colorSynchable)
     {
         colorSynchables ??= new List<IColorSynchable>();
         colorSynchables.Add(colorSynchable);
-    }
-
-    public void RemoveColorSynchables()
-    {
-        colorSynchables.Clear();
     }
 }
