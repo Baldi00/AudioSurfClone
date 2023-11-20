@@ -56,6 +56,8 @@ public class RaysManager : MonoBehaviour
         float currentAudioTimePercentage = gameManager.GetCurrentAudioTimePercentage();
         trackSpline.GetSubSplineIndexes(currentAudioTimePercentage, out int u, out _);
 
+        u = Mathf.Min(u, normalizedIntensities.Length - 2);
+
         Color currentColor = Color.Lerp(lowIntensityColor, highIntensityColor, normalizedIntensities[u]);
         float currentWidth = Mathf.Lerp(minWidth, maxWidth, normalizedIntensities[u]);
         float currentSpeed = Mathf.Lerp(minSpeed, maxSpeed, normalizedIntensities[u]) * Time.deltaTime;

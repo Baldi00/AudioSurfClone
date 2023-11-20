@@ -68,6 +68,7 @@ public class PlayerController : MonoBehaviour
         playerCameraTransform.localPosition = Vector3.Lerp(maxCameraDistancePosition, minCameraDistancePosition, currentSpeed);
 
         trackSpline.GetSubSplineIndexes(currentAudioTimePercentage, out int u, out _);
+        u = Mathf.Min(u, normalizedIntensities.Length - 2);
         bool doBeat = !beatDone && previousU != u && u < normalizedIntensities.Length && normalizedIntensities[u] - normalizedIntensities[u + 1] <= -0.1f;
 
         foreach (ParticleSystem rocketFire in rocketFires)
