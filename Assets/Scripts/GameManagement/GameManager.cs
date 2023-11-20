@@ -53,6 +53,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private LineRenderer trackVisualizer;
     [SerializeField] private RectTransform trackCurrentPointVisualizer;
 
+    [Header("End song UI")]
+    [SerializeField] private TextMeshProUGUI endSongTitle;
+    [SerializeField] private TextMeshProUGUI endSongScore;
+    [SerializeField] private GameObject endSongUi;
+
     private GameObject blocksContainer;
     private BSpline trackSpline;
 
@@ -71,6 +76,8 @@ public class GameManager : MonoBehaviour
     private int totalTrackPoints;
     private int currentPoints;
     private int currentPointsIncrement = 1;
+    private int pickedCount;
+    private int missedCount;
 
     private int pointsIncrementUiSpawnPosition = 1;
 
@@ -83,6 +90,11 @@ public class GameManager : MonoBehaviour
     private List<Transform> hexagonTransforms;
     private float hexagonTimer;
     private Vector3 hexagonStartScale;
+
+    private float previousAudioSourcePercentage;
+    private bool previousAudioSourcePlaying;
+
+    private string songTitle;
 
     public bool IsGameRunning { get; private set; }
 
@@ -101,6 +113,8 @@ public class GameManager : MonoBehaviour
 
         hexagonTransforms = new List<Transform>();
         hexagonStartScale = hexagonSubwooferPrefab.transform.localScale;
+
+        endSongUi.SetActive(false);
     }
 
     void Update()
@@ -139,6 +153,20 @@ public class GameManager : MonoBehaviour
         int firstSubSplinePointIndex = (int)lerp;
         float subSplineInterpolator = lerp % 1;
         trackCurrentPointVisualizer.localPosition = Vector3.Lerp(trackVisualizer.GetPosition(firstSubSplinePointIndex), trackVisualizer.GetPosition(firstSubSplinePointIndex + 1), subSplineInterpolator);
+
+        // End song detection
+        if (previousAudioSourcePlaying && !audioSource.isPlaying && (previousAudioSourcePercentage > GetCurrentAudioTimePercentage() || GetCurrentAudioTimePercentage() >= 1))
+        {
+            IsGameRunning = false;
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+            endSongTitle.text = songTitle;
+            endSongScore.text = $"SCORE: {currentPoints}/{totalTrackPoints} ({currentPoints * 100f / totalTrackPoints:0.00}%)<br>PICKED: {pickedCount}/{pickedCount + missedCount}<br>MISSED: <color=red>{missedCount}</color>";
+            endSongUi.SetActive(true);
+        }
+
+        previousAudioSourcePercentage = GetCurrentAudioTimePercentage();
+        previousAudioSourcePlaying = audioSource.isPlaying;
     }
 
     void OnDestroy()
@@ -160,6 +188,9 @@ public class GameManager : MonoBehaviour
 
     public void RestartSong()
     {
+        endSongUi.SetActive(false);
+        IsGameRunning = true;
+
         audioSource.Stop();
         audioSource.Play();
 
@@ -171,6 +202,8 @@ public class GameManager : MonoBehaviour
 
         currentPoints = 0;
         currentPointsIncrement = 1;
+        pickedCount = 0;
+        missedCount = 0;
 
         pointsUiText.text = $"{currentPoints}";
         pointsPercentageUiText.text = (currentPoints * 100f / totalTrackPoints).ToString("0.00") + "%";
@@ -185,6 +218,8 @@ public class GameManager : MonoBehaviour
 
     public void BackToSelectMenu()
     {
+        endSongUi.SetActive(false);
+
         IsGameRunning = false;
 
         selectFileUi.SetActive(true);
@@ -211,6 +246,8 @@ public class GameManager : MonoBehaviour
 
     public void BlockPicked(BlockPosition blockPosition)
     {
+        pickedCount++;
+
         currentPoints += currentPointsIncrement;
 
         pointsUiText.text = $"{currentPoints}";
@@ -236,6 +273,8 @@ public class GameManager : MonoBehaviour
 
     public void BlockMissed()
     {
+        missedCount++;
+
         PointsIncrementUiMover pointsMover = Instantiate(pointsIncrementPrefab,
             pointsUiText.transform.position + pointsIncrementUiSpawnPosition * pointsIncrementDistanceFromCenter * Vector3.right,
             Quaternion.identity,
@@ -268,7 +307,8 @@ public class GameManager : MonoBehaviour
         trackSpline = trackManager.GetTrackSpline();
         trackSplinePoints = trackSpline.GetPoints();
 
-        songNameUiText.text = songPath[(songPath.LastIndexOf("\\") + 1)..].Replace(".mp3", "").Replace(".wav", "");
+        songTitle = songPath[(songPath.LastIndexOf("\\") + 1)..].Replace(".mp3", "").Replace(".wav", "");
+        songNameUiText.text = songTitle;
 
         // Spawn blocks
         blocksContainer = new GameObject("Blocks container");
@@ -346,6 +386,8 @@ public class GameManager : MonoBehaviour
 
         currentPoints = 0;
         currentPointsIncrement = 1;
+        pickedCount = 0;
+        missedCount = 0;
 
         pointsUiText.text = $"{currentPoints}";
         pointsPercentageUiText.text = (currentPoints * 100f / totalTrackPoints).ToString("0.00") + "%";
