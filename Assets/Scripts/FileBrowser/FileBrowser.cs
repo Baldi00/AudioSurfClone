@@ -1,175 +1,236 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using Reg = System.Text.RegularExpressions;
-using TMPro;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Events;
+using TMPro;
 
 public class FileBrowser : MonoBehaviour
 {
     [SerializeField] private GameObject buttonsContainer;
     [SerializeField] private GameObject buttonPrefab;
-    [SerializeField] private GameObject searchBarPrefab;
+    [SerializeField] private TMP_InputField searchBarInputField;
 
-    private string currentPath = "C:\\";
+    private string currentPath;
     private int distanceFromStartMenu;
 
     private UnityEvent<string> onAudioFileSelected;
 
-    private TMP_InputField searchBarInputField;
     private Dictionary<string, string> foundMusicFiles;
 
     void Start()
     {
         foundMusicFiles = new Dictionary<string, string>();
-        SearchMusicFiles(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic)));
+        SearchMusicFiles(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic));
+
+        searchBarInputField.onValueChanged.AddListener(OnSearchBarValueChange);
         SetupStartButtons();
     }
 
-    public void UpdateCurrentPath(string newCurrentPath)
-    {
-        if (!Directory.Exists(newCurrentPath))
-            return;
-
-        distanceFromStartMenu++;
-
-        if (Reg.Regex.Match(newCurrentPath, "^[A-Z]:$").Success)
-            newCurrentPath += "\\";
-
-        currentPath = newCurrentPath;
-
-        DeleteChildrenOfGameObject(buttonsContainer, true);
-
-        UnityAction backActionCall;
-        if (distanceFromStartMenu <= 1)
-            backActionCall = () => SetupStartButtons();
-        else
-            backActionCall = () =>
-            {
-                distanceFromStartMenu -= 2;
-                UpdateCurrentPath(currentPath[..currentPath.LastIndexOf("\\")]);
-            };
-
-        SelectFileButton backDir = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
-        backDir.InitializeButton(
-            SelectButtonType.DIRECTORY,
-            "..Back",
-            backActionCall);
-
-        foreach (string dir in Directory.GetDirectories(currentPath))
-        {
-            SelectFileButton nextDir = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
-            nextDir.InitializeButton(
-                SelectButtonType.DIRECTORY,
-                dir[(dir.LastIndexOf("\\") + 1)..],
-                () => UpdateCurrentPath(Path.Combine(currentPath, dir)));
-        }
-        foreach (string file in Directory.GetFiles(currentPath))
-        {
-            if (file.EndsWith(".mp3") || file.EndsWith(".wav"))
-            {
-                SelectFileButton nextFile = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
-                nextFile.InitializeButton(
-                    SelectButtonType.FILE,
-                    file[(file.LastIndexOf("\\") + 1)..].Replace(".mp3", "").Replace(".wav", ""),
-                    () => onAudioFileSelected.Invoke(Path.Combine(currentPath, file)));
-            }
-        }
-    }
-
+    /// <summary>
+    /// Adds a listener to the audio file selected event
+    /// </summary>
+    /// <param name="listener">The listener to the audio file selected event</param>
     public void AddOnAudioFileSelectedListener(UnityAction<string> listener)
     {
         onAudioFileSelected ??= new UnityEvent<string>();
         onAudioFileSelected.AddListener(listener);
     }
 
-    private void DeleteChildrenOfGameObject(GameObject parent, bool dontDestroyFirst)
-    {
-        int childCount = parent.transform.childCount;
-
-        for (int i = childCount - 1; i >= 1; i--)
-        {
-            GameObject child = parent.transform.GetChild(i).gameObject;
-            Destroy(child);
-        }
-
-        if (!dontDestroyFirst && childCount > 0)
-        {
-            GameObject child = parent.transform.GetChild(0).gameObject;
-            Destroy(child);
-        }
-    }
-
-    private void SetupStartButtons()
-    {
-        distanceFromStartMenu = 0;
-
-        DeleteChildrenOfGameObject(buttonsContainer, false);
-
-        searchBarInputField = Instantiate(searchBarPrefab, buttonsContainer.transform).GetComponent<TMP_InputField>();
-        searchBarInputField.onValueChanged.AddListener(OnSearchBarValueChange);
-
-        SelectFileButton musicFolder = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
-        musicFolder.InitializeButton(
-            SelectButtonType.DIRECTORY,
-            "Music",
-            () => UpdateCurrentPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic))));
-
-        SelectFileButton desktopFolder = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
-        desktopFolder.InitializeButton(
-            SelectButtonType.DIRECTORY,
-            "Desktop",
-            () => UpdateCurrentPath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop))));
-
-        foreach (DriveInfo drive in DriveInfo.GetDrives())
-        {
-            SelectFileButton currentDriveButton = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
-            currentDriveButton.InitializeButton(
-                SelectButtonType.DIRECTORY,
-                drive.Name,
-                () => UpdateCurrentPath(drive.RootDirectory.FullName));
-        }
-    }
-
+    /// <summary>
+    /// Recursivly searches for audio files starting from the given directory path
+    /// </summary>
+    /// <param name="startingPath"></param>
     private void SearchMusicFiles(string startingPath)
     {
         if (!Directory.Exists(startingPath))
             return;
 
-        foreach (string dir in Directory.GetDirectories(startingPath))
-            SearchMusicFiles(Path.Combine(startingPath, dir));
+        // Recursive call to sub directories
+        foreach (string dirPath in Directory.GetDirectories(startingPath))
+            SearchMusicFiles(dirPath);
 
-        foreach (string file in Directory.GetFiles(startingPath))
-            if (file.EndsWith(".mp3") || file.EndsWith(".wav"))
-                foundMusicFiles.Add(
-                    file[(file.LastIndexOf("\\") + 1)..].Replace(".mp3", "").Replace(".wav", ""),
-                    Path.Combine(startingPath, file));
+        // Search for audio files
+        foreach (string filePath in Directory.GetFiles(startingPath))
+            if (IsAudioFile(filePath))
+                foundMusicFiles.Add(GetNameFromPath(filePath), filePath);
     }
 
+    /// <summary>
+    /// Called when the value of the search bar changes.
+    /// If the length of the current value is greater than a certain amout sets up the UI with found audio files
+    /// that contains the current search bar value.
+    /// </summary>
+    /// <param name="currentValue">The current value of the search bar</param>
     private void OnSearchBarValueChange(string currentValue)
     {
         if (currentValue.Length <= 2)
             return;
 
-        DeleteChildrenOfGameObject(buttonsContainer, true);
+        DeleteChildren(buttonsContainer);
 
-        SelectFileButton backDir = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
-        backDir.InitializeButton(
-            SelectButtonType.DIRECTORY,
-            "..Back",
-            () => SetupStartButtons());
+        CreateButton("..Back", SelectButtonType.DIRECTORY, () => SetupStartButtons());
 
         foreach (string fileName in foundMusicFiles.Keys)
-        {
             if (fileName.ToLower().Contains(currentValue.ToLower()))
+                CreateButton(foundMusicFiles[fileName], SelectButtonType.FILE);
+    }
+
+    /// <summary>
+    /// Resets the file browser to the start menu.
+    /// I.e. Resets the search bar, remove all buttons, then creates the music, desktop and drives directory buttons
+    /// </summary>
+    private void SetupStartButtons()
+    {
+        distanceFromStartMenu = 0;
+
+        searchBarInputField.text = "";
+
+        DeleteChildren(buttonsContainer);
+        CreateButton(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), SelectButtonType.DIRECTORY);
+        CreateButton(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), SelectButtonType.DIRECTORY);
+
+        foreach (DriveInfo drive in DriveInfo.GetDrives())
+            CreateButton(drive.RootDirectory.FullName, SelectButtonType.DIRECTORY);
+    }
+
+    /// <summary>
+    /// Creates a button of the given type leading to the given path.
+    /// In case of directory, clicking it will lead to the content of that directory,
+    /// in case of an audio file, clicking it will start the game with that audio
+    /// </summary>
+    /// <param name="path">The path the button will lead you to</param>
+    /// <param name="type">The type of the button</param>
+    private void CreateButton(string path, SelectButtonType type)
+    {
+        UnityAction callback =
+            type == SelectButtonType.FILE ?
+            () => onAudioFileSelected.Invoke(path) :
+            () => UpdateCurrentPathAndRefreshUi(path);
+
+        string name = GetNameFromPath(path);
+
+        CreateButton(name, type, callback);
+    }
+
+    /// <summary>
+    /// Creates a button with the given name, of the given type that will call the given callback when clicked.
+    /// </summary>
+    /// <param name="name">The name of the button</param>
+    /// <param name="type">The type of the button</param>
+    /// <param name="callback">The callback that will be called when clicking the button</param>
+    private void CreateButton(string name, SelectButtonType type, UnityAction callback)
+    {
+        SelectFileButton button =
+            Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
+
+        button.InitializeButton(type, name, callback);
+    }
+
+    /// <summary>
+    /// Updates the current path of the file browser and refreshes the ui
+    /// </summary>
+    /// <param name="newCurrentPath">The current path the file browser will have after the refresh</param>
+    private void UpdateCurrentPathAndRefreshUi(string newCurrentPath)
+    {
+        if (!Directory.Exists(newCurrentPath))
+            return;
+
+        // Update distance from start menu and current file path
+        distanceFromStartMenu++;
+
+        if (Regex.Match(newCurrentPath, "^[A-Z]:$").Success)
+            newCurrentPath += Path.DirectorySeparatorChar;
+
+        currentPath = newCurrentPath;
+
+        // Refresh UI
+        DeleteChildren(buttonsContainer);
+        CreateBackButtonFor(currentPath);
+        CreateDirectoryButtonsUnder(currentPath);
+        CreateAudioFilesButtonsUnder(currentPath);
+    }
+
+    /// <summary>
+    /// Creates the back button for the given path.
+    /// The back button will lead to the previous folder or to the initial menu if there is no previous folder
+    /// </summary>
+    /// <param name="path">The path for which the back button will be created</param>
+    private void CreateBackButtonFor(string path)
+    {
+        UnityAction backActionCallback;
+        if (distanceFromStartMenu <= 1)
+            backActionCallback = () => SetupStartButtons();
+        else
+            backActionCallback = () =>
             {
-                SelectFileButton songFile = Instantiate(buttonPrefab, buttonsContainer.transform).GetComponent<SelectFileButton>();
-                songFile.InitializeButton(
-                    SelectButtonType.FILE,
-                    fileName,
-                    () => onAudioFileSelected.Invoke(foundMusicFiles[fileName]));
-            }
+                distanceFromStartMenu -= 2;
+                UpdateCurrentPathAndRefreshUi(path[..path.LastIndexOf(Path.DirectorySeparatorChar)]);
+            };
+
+        CreateButton("..Back", SelectButtonType.DIRECTORY, backActionCallback);
+    }
+
+    /// <summary>
+    /// Creates the sub directory buttons for the given path
+    /// </summary>
+    /// <param name="path">The root path under which the directory buttons will be created</param>
+    private void CreateDirectoryButtonsUnder(string path)
+    {
+        foreach (string dirPath in Directory.GetDirectories(path))
+            CreateButton(dirPath, SelectButtonType.DIRECTORY);
+    }
+
+    /// <summary>
+    /// Creates the audio file buttons under the directory at the given
+    /// </summary>
+    /// <param name="path">The root path under which the audio files buttons will be created</param>
+    private void CreateAudioFilesButtonsUnder(string path)
+    {
+        foreach (string filePath in Directory.GetFiles(path))
+            if (IsAudioFile(filePath))
+                CreateButton(filePath, SelectButtonType.FILE);
+    }
+
+    /// <summary>
+    /// Deletes all the children of the given gameObject
+    /// </summary>
+    /// <param name="parent">The gameObject you want to delete its children</param>
+    private void DeleteChildren(GameObject parent)
+    {
+        int childCount = parent.transform.childCount;
+
+        for (int i = childCount - 1; i >= 0; i--)
+        {
+            GameObject child = parent.transform.GetChild(i).gameObject;
+            Destroy(child);
         }
+    }
+
+    /// <summary>
+    /// Returns the name of the folder or file (without extension) at the given path
+    /// </summary>
+    /// <param name="path">The path to the item whose name you want to retrieve</param>
+    /// <returns>The name of the folder or file (without extension) at the given path</returns>
+    private string GetNameFromPath(string path)
+    {
+        if (path.EndsWith(Path.DirectorySeparatorChar))
+            path = path[..^1];
+
+        if (File.GetAttributes(path).HasFlag(FileAttributes.Directory))
+            return path[(path.LastIndexOf(Path.DirectorySeparatorChar) + 1)..];
+        else
+            return Path.GetFileNameWithoutExtension(path);
+    }
+
+    /// <summary>
+    /// Checks if the given path correspond to an audio file
+    /// </summary>
+    /// <param name="path">The path of the element to check</param>
+    /// <returns>True if the given path correspond to an audio file (i.e. is MP3), false otherwise</returns>
+    private bool IsAudioFile(string path)
+    {
+        return path.EndsWith(".mp3");
     }
 }
