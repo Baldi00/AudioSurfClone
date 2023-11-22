@@ -19,9 +19,7 @@ public class ColorSyncher : MonoBehaviour
 
     void Update()
     {
-        currentColor = gameManager.GetCurrentColor();
-        foreach (IColorSynchable colorSynchable in colorSynchables)
-            colorSynchable.SyncColor(currentColor);
+        SyncColorSynchables();
     }
 
     /// <summary>
@@ -32,5 +30,15 @@ public class ColorSyncher : MonoBehaviour
     {
         colorSynchables ??= new List<IColorSynchable>();
         colorSynchables.Add(colorSynchable);
+    }
+
+    /// <summary>
+    /// Retrive current color from game manager and sync all the registered color synchables
+    /// </summary>
+    private void SyncColorSynchables()
+    {
+        currentColor = gameManager.GetCurrentColor();
+        foreach (IColorSynchable colorSynchable in colorSynchables)
+            colorSynchable.SyncColor(currentColor);
     }
 }

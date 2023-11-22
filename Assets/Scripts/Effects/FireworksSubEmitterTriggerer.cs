@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Triggers the subemitter of the current particle system one time each interval step
+/// </summary>
 [DisallowMultipleComponent]
 [RequireComponent(typeof(ParticleSystem))]
 public class FireworksSubEmitterTriggerer : MonoBehaviour

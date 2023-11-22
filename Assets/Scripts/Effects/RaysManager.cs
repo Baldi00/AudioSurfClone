@@ -33,6 +33,28 @@ public class RaysManager : MonoBehaviour
         SpawnRays();
     }
 
+    void Update()
+    {
+        if (!gameManager.IsGameRunning)
+            return;
+
+        UpdateRaysColorWidthAndSpeed();
+    }
+
+    /// <summary>
+    /// Initializes the rays manager with the spline and the normalized intensities of the track
+    /// </summary>
+    /// <param name="trackSpline">The spline of the track</param>
+    /// <param name="normalizedIntensities">The normalized intensities of the track</param>
+    public void Initialize(BSpline trackSpline, float[] normalizedIntensities)
+    {
+        this.trackSpline = trackSpline;
+        this.normalizedIntensities = normalizedIntensities;
+    }
+
+    /// <summary>
+    /// Spawns the line renderers as rays
+    /// </summary>
     private void SpawnRays()
     {
         for (int i = 0; i < raysCount; i++)
@@ -40,36 +62,36 @@ public class RaysManager : MonoBehaviour
             LineRenderer ray = Instantiate(rayPrefab, transform).GetComponent<LineRenderer>();
 
             float angle = 2 * Mathf.PI * ((float)i / raysCount);
+            float cos = Mathf.Cos(angle);
+            float sin = Mathf.Sin(angle);
 
-            ray.SetPosition(0, startRadius * new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0));
-            ray.SetPosition(1, endRadius * new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0) + distance * Vector3.forward);
+            ray.SetPosition(0, startRadius * new Vector3(cos, sin));
+            ray.SetPosition(1, endRadius * new Vector3(cos, sin) + distance * Vector3.forward);
 
             rays.Add(ray);
         }
     }
 
-    void Update()
+    /// <summary>
+    /// Updates the color, width and speed of the rays based on the current song intensity
+    /// </summary>
+    private void UpdateRaysColorWidthAndSpeed()
     {
-        if (!gameManager.IsGameRunning)
-            return;
+        int index = GetCurrentIntensityIndex();
 
-        float currentAudioTimePercentage = gameManager.GetCurrentAudioTimePercentage();
-        trackSpline.GetSubSplineIndexes(currentAudioTimePercentage, out int u, out _);
+        Color currentColor = Color.Lerp(lowIntensityColor, highIntensityColor, normalizedIntensities[index]);
+        float currentWidth = Mathf.Lerp(minWidth, maxWidth, normalizedIntensities[index]);
+        float currentSpeed = Mathf.Lerp(minSpeed, maxSpeed, normalizedIntensities[index]) * Time.deltaTime;
 
-        u = Mathf.Min(u, normalizedIntensities.Length - 2);
-
-        Color currentColor = Color.Lerp(lowIntensityColor, highIntensityColor, normalizedIntensities[u]);
-        float currentWidth = Mathf.Lerp(minWidth, maxWidth, normalizedIntensities[u]);
-        float currentSpeed = Mathf.Lerp(minSpeed, maxSpeed, normalizedIntensities[u]) * Time.deltaTime;
-
-        bool doBeat = beatTimer <= 0 && previousU != u && u < normalizedIntensities.Length && normalizedIntensities[u] - normalizedIntensities[u + 1] <= -0.1f;
-
+        // Detect a beat
+        bool doBeat = DetectBeat(index);
         if (doBeat)
         {
             beatTimer = beatDuration;
-            previousU = u;
+            previousU = index;
         }
 
+        // If during a beat, set the color, width and speed to the average between min and max
         if (beatTimer > 0)
         {
             currentColor = Color.Lerp(lowIntensityColor, highIntensityColor, 0.5f);
@@ -78,6 +100,7 @@ public class RaysManager : MonoBehaviour
             beatTimer -= Time.deltaTime;
         }
 
+        // Update color, width and speed
         foreach (LineRenderer ray in rays)
         {
             ray.startColor = ray.endColor = currentColor;
@@ -87,9 +110,29 @@ public class RaysManager : MonoBehaviour
         transform.rotation *= Quaternion.Euler(0, 0, currentSpeed);
     }
 
-    public void Initialize(BSpline trackSpline, float[] normalizedIntensities)
+    /// <summary>
+    /// Returns the current intensity index of the track
+    /// </summary>
+    /// <returns>The current intensity index of the track</returns>
+    private int GetCurrentIntensityIndex()
     {
-        this.trackSpline = trackSpline;
-        this.normalizedIntensities = normalizedIntensities;
+        float currentAudioTimePercentage = gameManager.GetCurrentAudioTimePercentage();
+        trackSpline.GetSubSplineIndexes(currentAudioTimePercentage, out int index, out _);
+        index = Mathf.Min(index, normalizedIntensities.Length - 2);
+        return index;
+    }
+
+    /// <summary>
+    /// Detects if there is a beat at the given index
+    /// </summary>
+    /// <param name="index">The index of the intensity array</param>
+    /// <returns>True if a beat was detected, false otherwise</returns>
+    private bool DetectBeat(int index)
+    {
+        return
+            beatTimer <= 0 &&
+            previousU != index &&
+            index < normalizedIntensities.Length &&
+            normalizedIntensities[index] - normalizedIntensities[index + 1] <= -0.1f;
     }
 }

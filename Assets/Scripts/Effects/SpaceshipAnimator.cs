@@ -15,15 +15,27 @@ public class SpaceshipAnimator : MonoBehaviour
     private float currentPitch;
     private float currentFloating;
     private float currentRoll;
+    private float mouseX;
 
     void Update()
     {
+        UpdateSpaceshipPositionAndRotation();
+    }
+
+    /// <summary>
+    /// Updates the spaceship position and rotation according to animation values and user input
+    /// </summary>
+    private void UpdateSpaceshipPositionAndRotation()
+    {
+        mouseX = -Input.GetAxis("Mouse X");
+
         currentPitch = pitchAmplitude * (Mathf.Sin(pitchFrequency * Time.time) * 0.5f + 0.5f);
         currentFloating = floatingAmplitude * (Mathf.Sin(floatingFrequency * Time.time) * 0.5f + 0.5f);
-        currentRoll = Mathf.Lerp(-Input.GetAxis("Mouse X") * Time.deltaTime * rollMultiplier, currentRoll, rollSmoothing);
+        currentRoll = Mathf.Lerp(mouseX * Time.deltaTime * rollMultiplier, currentRoll, rollSmoothing);
         currentRoll = Mathf.Clamp(currentRoll, -maxRoll, maxRoll);
 
-        transform.localPosition = Vector3.up * currentFloating + positionOffset;
-        transform.localRotation = Quaternion.Euler(currentPitch, 0, currentRoll);
+        transform.SetLocalPositionAndRotation(
+            Vector3.up * currentFloating + positionOffset,
+            Quaternion.Euler(currentPitch, 0, currentRoll));
     }
 }

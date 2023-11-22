@@ -1,6 +1,9 @@
 using TMPro;
 using UnityEngine;
 
+/// <summary>
+/// Moves and updates the color of the ui points
+/// </summary>
 public class PointsIncrementUiMover : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI pointsIncrementText;
@@ -23,10 +26,16 @@ public class PointsIncrementUiMover : MonoBehaviour
     void Update()
     {
         timer += Time.deltaTime;
-        rectTransform.anchoredPosition = new Vector2(initialX + direction * speed * timer, rectTransform.anchoredPosition.y);
+
+        // Update position
+        rectTransform.anchoredPosition =
+            new Vector2(initialX + direction * speed * timer, rectTransform.anchoredPosition.y);
+
+        // Update color
         color.a = 1 - timer / duration;
         pointsIncrementText.color = color;
 
+        // After the timer destroy the object
         if (timer >= duration)
             Destroy(gameObject);
     }
