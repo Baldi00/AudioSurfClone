@@ -272,7 +272,7 @@ public class GameManager : MonoBehaviour
 
         pointsIncrementUiSpawnPosition = -pointsIncrementUiSpawnPosition;
 
-        currentPointsIncrement = Mathf.Min(200, currentPointsIncrement + 2);
+        currentPointsIncrement = Mathf.Min(200, currentPointsIncrement + 4);
 
         EmitFireworks(blockPosition);
     }
@@ -295,7 +295,11 @@ public class GameManager : MonoBehaviour
         pointsIncrementUiSpawnPosition = -pointsIncrementUiSpawnPosition;
 
         currentPoints = Mathf.Max(0, currentPoints - 200);
-        currentPointsIncrement = 1;
+        currentPointsIncrement = Mathf.Max(1, currentPointsIncrement - 50);
+
+        if (currentPointsIncrement % 2 == 0)
+            currentPointsIncrement++;
+
         pointsUiText.text = $"{currentPoints}";
         pointsPercentageUiText.text = (currentPoints * 100f / totalTrackPoints).ToString("0.00") + "%";
     }
@@ -509,7 +513,7 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < blocksData.Count; i++)
         {
             totalTrackPoints += increment;
-            increment = Mathf.Min(200, increment + 2);
+            increment = Mathf.Min(200, increment + 4);
         }
     }
 
