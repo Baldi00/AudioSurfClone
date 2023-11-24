@@ -21,7 +21,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float missSphereRadius;
     [SerializeField] private Vector3 missSphereOffset;
 
-    private bool followTrack;
     private float[] normalizedIntensities;
 
     private bool beatDone;
@@ -43,7 +42,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (!followTrack || !gameManager.IsGameRunning)
+        if (!gameManager.IsGameRunning)
             return;
 
         currentAudioTimePercentage = gameManager.GetCurrentAudioTimePercentage();
@@ -95,24 +94,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void StartFollowingTrack(BSpline trackSpline)
+    public void Initialize()
     {
-        this.trackSpline = trackSpline;
-
+        trackSpline = gameManager.GetTrackData().spline;
+        normalizedIntensities = gameManager.GetTrackData().normalizedIntensities;
         transform.position = trackSpline.GetPointAt(0);
         transform.forward = Vector3.right;
-
-        followTrack = true;
-    }
-
-    public void StopFollowinTrack()
-    {
-        followTrack = false;
-    }
-
-    public void SetNormalizedIntensities(float[] normalizedIntensities)
-    {
-        this.normalizedIntensities = normalizedIntensities;
     }
 
     private void DoCollisionWithBlockChecks(Vector3 previousPosition, Vector3 nextPosition)

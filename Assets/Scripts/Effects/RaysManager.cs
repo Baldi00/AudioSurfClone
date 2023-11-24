@@ -42,14 +42,12 @@ public class RaysManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Initializes the rays manager with the spline and the normalized intensities of the track
+    /// Initializes the rays manager
     /// </summary>
-    /// <param name="trackSpline">The spline of the track</param>
-    /// <param name="normalizedIntensities">The normalized intensities of the track</param>
-    public void Initialize(BSpline trackSpline, float[] normalizedIntensities)
+    public void Initialize()
     {
-        this.trackSpline = trackSpline;
-        this.normalizedIntensities = normalizedIntensities;
+        trackSpline = gameManager.GetTrackData().spline;
+        normalizedIntensities = gameManager.GetTrackData().normalizedIntensities;
     }
 
     /// <summary>

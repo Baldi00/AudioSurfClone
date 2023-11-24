@@ -627,11 +627,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 277378679}
-  - component: {fileID: 277378682}
   - component: {fileID: 277378681}
   - component: {fileID: 277378680}
   m_Layer: 0
-  m_Name: TrackManager
+  m_Name: Track
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -702,26 +701,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 277378678}
   m_Mesh: {fileID: 0}
---- !u!114 &277378682
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 277378678}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2da7aad6e04bb5e4a8f277a87420ec31, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  trackMeshResolution: 8192
-  trackMeshThickness: 4
-  trackMeshBitangent: {x: 0, y: 0, z: 1}
-  slopeSmoothness: 0.9
-  minSlopeIntensity: 0.6
-  maxSlopeIntensity: 1.2
-  minSpeed: 0.1
-  maxSpeed: 3.5
 --- !u!1 &293079151
 GameObject:
   m_ObjectHideFlags: 0
@@ -5969,6 +5948,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1649067788}
   - component: {fileID: 1649067787}
+  - component: {fileID: 1649067792}
   - component: {fileID: 1649067789}
   - component: {fileID: 1649067790}
   - component: {fileID: 1649067791}
@@ -5994,7 +5974,7 @@ MonoBehaviour:
   audioSource: {fileID: 350832207}
   playerController: {fileID: 873172370}
   fileBrowser: {fileID: 718914522}
-  trackManager: {fileID: 277378682}
+  trackManager: {fileID: 1649067792}
   pauseManager: {fileID: 1649067790}
   selectFileUi: {fileID: 1806092574}
   colorSyncher: {fileID: 1649067789}
@@ -6039,6 +6019,8 @@ MonoBehaviour:
   endSongTitle: {fileID: 423149005}
   endSongScore: {fileID: 425722527}
   endSongUi: {fileID: 1098578428}
+  trackMeshFilter: {fileID: 277378681}
+  trackMeshRenderer: {fileID: 277378680}
 --- !u!4 &1649067788
 Transform:
   m_ObjectHideFlags: 0
@@ -6092,6 +6074,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f326851b4f2bb4f8ac00ff63076ccb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1649067792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1649067786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da7aad6e04bb5e4a8f277a87420ec31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  trackMeshResolution: 8192
+  trackMeshThickness: 4
+  trackMeshBitangent: {x: 0, y: 0, z: 1}
+  slopeSmoothness: 0.9
+  minSlopeIntensity: 0.6
+  maxSlopeIntensity: 1.2
+  minSpeed: 0.1
+  maxSpeed: 3.5
 --- !u!1 &1695876527
 GameObject:
   m_ObjectHideFlags: 0
