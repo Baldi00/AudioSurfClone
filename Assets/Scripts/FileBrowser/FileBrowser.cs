@@ -53,8 +53,8 @@ public class FileBrowser : MonoBehaviour
 
         // Search for audio files
         foreach (string filePath in Directory.GetFiles(startingPath))
-            if (IsAudioFile(filePath))
-                foundMusicFiles.Add(GetNameFromPath(filePath), filePath);
+            if (Utils.IsAudioFile(filePath))
+                foundMusicFiles.Add(Utils.GetNameFromPath(filePath), filePath);
     }
 
     /// <summary>
@@ -109,7 +109,7 @@ public class FileBrowser : MonoBehaviour
             () => onAudioFileSelected.Invoke(path) :
             () => UpdateCurrentPathAndRefreshUi(path);
 
-        string name = GetNameFromPath(path);
+        string name = Utils.GetNameFromPath(path);
 
         CreateButton(name, type, callback);
     }
@@ -189,7 +189,7 @@ public class FileBrowser : MonoBehaviour
     private void CreateAudioFilesButtonsUnder(string path)
     {
         foreach (string filePath in Directory.GetFiles(path))
-            if (IsAudioFile(filePath))
+            if (Utils.IsAudioFile(filePath))
                 CreateButton(filePath, SelectButtonType.FILE);
     }
 
@@ -206,31 +206,5 @@ public class FileBrowser : MonoBehaviour
             GameObject child = parent.transform.GetChild(i).gameObject;
             Destroy(child);
         }
-    }
-
-    /// <summary>
-    /// Returns the name of the folder or file (without extension) at the given path
-    /// </summary>
-    /// <param name="path">The path to the item whose name you want to retrieve</param>
-    /// <returns>The name of the folder or file (without extension) at the given path</returns>
-    private string GetNameFromPath(string path)
-    {
-        if (path.EndsWith(Path.DirectorySeparatorChar))
-            path = path[..^1];
-
-        if (File.GetAttributes(path).HasFlag(FileAttributes.Directory))
-            return path[(path.LastIndexOf(Path.DirectorySeparatorChar) + 1)..];
-        else
-            return Path.GetFileNameWithoutExtension(path);
-    }
-
-    /// <summary>
-    /// Checks if the given path correspond to an audio file
-    /// </summary>
-    /// <param name="path">The path of the element to check</param>
-    /// <returns>True if the given path correspond to an audio file (i.e. is MP3), false otherwise</returns>
-    private bool IsAudioFile(string path)
-    {
-        return path.EndsWith(".mp3");
     }
 }
