@@ -5950,6 +5950,7 @@ GameObject:
   - component: {fileID: 1649067787}
   - component: {fileID: 1649067792}
   - component: {fileID: 1649067793}
+  - component: {fileID: 1649067794}
   - component: {fileID: 1649067789}
   - component: {fileID: 1649067790}
   - component: {fileID: 1649067791}
@@ -5980,6 +5981,8 @@ MonoBehaviour:
   colorSyncher: {fileID: 1649067789}
   blocksManager: {fileID: 1649067793}
   blockMaterial: {fileID: 2100000, guid: 84f570d55079b774ba8bd501b4c92fb1, type: 2}
+  hexagonSubwooferMaterial: {fileID: 2100000, guid: 3a1cb3ec60110fc459919f60c637fa5a,
+    type: 2}
   gameUiContainer: {fileID: 896278950}
   songNameUiText: {fileID: 1921914956}
   pointsUiText: {fileID: 809330729}
@@ -6001,11 +6004,7 @@ MonoBehaviour:
   - {fileID: 2117268757}
   - {fileID: 1106993982}
   raysManager: {fileID: 642526175}
-  hexagonSubwooferPrefab: {fileID: 667289278054755622, guid: 4cb2b476d018e4545b3b8e908e358f7e,
-    type: 3}
-  hexagonSubwooferMaterial: {fileID: 2100000, guid: 3a1cb3ec60110fc459919f60c637fa5a,
-    type: 2}
-  hexagonBeatDuration: 0.2
+  hexagonsManager: {fileID: 1649067794}
   trackVisualizer: {fileID: 601638076}
   trackCurrentPointVisualizer: {fileID: 1279801145}
   endSongTitle: {fileID: 423149005}
@@ -6107,6 +6106,21 @@ MonoBehaviour:
   highBeatFrequency: 7500
   highBeatThreshold: 0.025
   highBeatSkip: 0.5
+--- !u!114 &1649067794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1649067786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d573f0e2827b334393a2694a0f65257, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hexagonSubwooferPrefab: {fileID: 667289278054755622, guid: 4cb2b476d018e4545b3b8e908e358f7e,
+    type: 3}
+  hexagonBeatDuration: 0.2
 --- !u!1 &1695876527
 GameObject:
   m_ObjectHideFlags: 0
