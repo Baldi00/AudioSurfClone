@@ -5949,6 +5949,7 @@ GameObject:
   - component: {fileID: 1649067788}
   - component: {fileID: 1649067787}
   - component: {fileID: 1649067792}
+  - component: {fileID: 1649067793}
   - component: {fileID: 1649067789}
   - component: {fileID: 1649067790}
   - component: {fileID: 1649067791}
@@ -5975,19 +5976,10 @@ MonoBehaviour:
   playerController: {fileID: 873172370}
   fileBrowser: {fileID: 718914522}
   trackManager: {fileID: 1649067792}
-  pauseManager: {fileID: 1649067790}
   selectFileUi: {fileID: 1806092574}
   colorSyncher: {fileID: 1649067789}
-  blockPrefab: {fileID: 3782547491752180444, guid: 63946fccfc2fcf947ba5c5e5574a9cea,
-    type: 3}
+  blocksManager: {fileID: 1649067793}
   blockMaterial: {fileID: 2100000, guid: 84f570d55079b774ba8bd501b4c92fb1, type: 2}
-  maxDistanceFromCenter: 2.3
-  lowBeatFrequency: 20
-  lowBeatThreshold: 0.1
-  lowBeatSkip: 0.5
-  highBeatFrequency: 7500
-  highBeatThreshold: 0.025
-  highBeatSkip: 0.5
   gameUiContainer: {fileID: 896278950}
   songNameUiText: {fileID: 1921914956}
   pointsUiText: {fileID: 809330729}
@@ -6094,6 +6086,27 @@ MonoBehaviour:
   maxSlopeIntensity: 1.2
   minSpeed: 0.1
   maxSpeed: 3.5
+--- !u!114 &1649067793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1649067786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fac87f7930b16347b01224fd6ef9680, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blockPrefab: {fileID: 3782547491752180444, guid: 63946fccfc2fcf947ba5c5e5574a9cea,
+    type: 3}
+  maxDistanceFromCenter: 2.3
+  lowBeatFrequency: 20
+  lowBeatThreshold: 0.1
+  lowBeatSkip: 0.5
+  highBeatFrequency: 7500
+  highBeatThreshold: 0.025
+  highBeatSkip: 0.5
 --- !u!1 &1695876527
 GameObject:
   m_ObjectHideFlags: 0

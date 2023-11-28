@@ -42,7 +42,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        if (!gameManager.IsGameRunning)
+        if (!gameManager.IsInTrackScene)
             return;
 
         currentAudioTimePercentage = gameManager.GetCurrentAudioTimePercentage();
@@ -111,7 +111,7 @@ public class PlayerController : MonoBehaviour
             direction, out RaycastHit pickHitInfo, distance) &&
             pickHitInfo.collider.gameObject.CompareTag("Block"))
         {
-            BlockManager blockManager = pickHitInfo.collider.gameObject.transform.parent.GetComponent<BlockManager>();
+            Block blockManager = pickHitInfo.collider.gameObject.transform.parent.GetComponent<Block>();
             blockManager.Pick();
             gameManager.BlockPicked(blockManager.Position);
         }
@@ -120,7 +120,7 @@ public class PlayerController : MonoBehaviour
             direction, out RaycastHit missHitInfo, distance) &&
             missHitInfo.collider.gameObject.CompareTag("Block"))
         {
-            BlockManager blockManager = missHitInfo.collider.gameObject.transform.parent.GetComponent<BlockManager>();
+            Block blockManager = missHitInfo.collider.gameObject.transform.parent.GetComponent<Block>();
             blockManager.DisableCollider();
             gameManager.BlockMissed();
         }

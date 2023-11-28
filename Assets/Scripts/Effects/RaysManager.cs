@@ -35,7 +35,7 @@ public class RaysManager : MonoBehaviour
 
     void Update()
     {
-        if (!gameManager.IsGameRunning)
+        if (!gameManager.IsInTrackScene)
             return;
 
         UpdateRaysColorWidthAndSpeed();

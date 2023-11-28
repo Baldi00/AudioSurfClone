@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BlockManager : MonoBehaviour
+public class Block : MonoBehaviour
 {
     [SerializeField] private new Renderer renderer;
     [SerializeField] private Collider myCollider;

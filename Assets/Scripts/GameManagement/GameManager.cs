@@ -1,12 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.Burst;
-using Unity.Collections;
-using Unity.Jobs;
-using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Jobs;
 
 public class GameManager : MonoBehaviour
 {
@@ -15,23 +10,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] private PlayerController playerController;
     [SerializeField] private FileBrowser fileBrowser;
     [SerializeField] private TrackGenerator trackManager;
-    [SerializeField] private PauseManager pauseManager;
 
     [SerializeField] private GameObject selectFileUi;
 
     [SerializeField] private ColorSyncher colorSyncher;
 
-    [SerializeField] private GameObject blockPrefab;
+    [SerializeField] private BlocksManager blocksManager;
     [SerializeField] private Material blockMaterial;
-
-    [Header("Block spawn")]
-    [SerializeField] private float maxDistanceFromCenter = 2.2f;
-    [SerializeField] private int lowBeatFrequency = 20;
-    [SerializeField] private float lowBeatThreshold = 0.1f;
-    [SerializeField] private float lowBeatSkip = 0.5f;
-    [SerializeField] private int highBeatFrequency = 7500;
-    [SerializeField] private float highBeatThreshold = 0.025f;
-    [SerializeField] private float highBeatSkip = 0.5f;
 
     [Header("UI")]
     [SerializeField] private Transform gameUiContainer;
@@ -65,18 +50,6 @@ public class GameManager : MonoBehaviour
 
     private TrackData trackData;
 
-    private GameObject blocksContainer;
-
-    private List<BlockManager> blocks;
-    private List<BlockData> blocksData;
-    private List<Transform> blocksTransforms;
-
-    private NativeArray<Vector3> trackSplinePointsNativeArray;
-    private NativeArray<BlockData> blocksDataNativeArray;
-    private TransformAccessArray blocksTransformsAccessArray;
-    private JobHandle updateBlocksPositionJobHandle;
-    private UpdateBlockPositionsJob updateBlocksPositionJob;
-
     private int totalTrackPoints;
     private int currentPoints;
     private int currentPointsIncrement = 1;
@@ -85,9 +58,7 @@ public class GameManager : MonoBehaviour
 
     private int pointsIncrementUiSpawnPosition = 1;
 
-    private List<int> lowBeatIndexes;
     private List<int> lowBeatIndexes2;
-    private List<int> highBeatIndexes;
     private List<int> highBeatIndexes2;
 
     private GameObject hexagonContainer;
@@ -100,20 +71,13 @@ public class GameManager : MonoBehaviour
 
     private string songTitle;
 
-    public bool IsGameRunning { get; private set; }
+    public bool IsInTrackScene { get; private set; }
 
     void Awake()
     {
-        IsGameRunning = false;
+        IsInTrackScene = false;
 
         fileBrowser.AddOnAudioFileSelectedListener((songPath) => StartCoroutine(LoadAudioAndStartGame(songPath)));
-
-        colorSyncher.enabled = false;
-        pauseManager.enabled = false;
-
-        blocks = new List<BlockManager>();
-        blocksData = new List<BlockData>();
-        blocksTransforms = new List<Transform>();
 
         hexagonTransforms = new List<Transform>();
         hexagonStartScale = hexagonSubwooferPrefab.transform.localScale;
@@ -123,14 +87,14 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (!IsGameRunning)
+        if (!IsInTrackScene)
             return;
 
         float currentPercentage = GetCurrentAudioTimePercentage();
         Color currentColor = trackData.spline.GetColorAt(currentPercentage);
         hexagonSubwooferMaterial.color = currentColor;
         blockMaterial.color = currentColor;
-        UpdateBlocksPositions(currentPercentage);
+        blocksManager.UpdateBlocksPositions(currentPercentage);
 
         trackData.spline.GetSubSplineIndexes(currentPercentage, out int currentIndex, out _);
         if (lowBeatIndexes2.Contains(currentIndex))
@@ -164,7 +128,7 @@ public class GameManager : MonoBehaviour
         // End song detection
         if (previousAudioSourcePlaying && !audioSource.isPlaying && (previousAudioSourcePercentage > currentPercentage || currentPercentage >= 1))
         {
-            IsGameRunning = false;
+            IsInTrackScene = false;
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
             endSongTitle.text = songTitle;
@@ -176,18 +140,6 @@ public class GameManager : MonoBehaviour
         previousAudioSourcePlaying = audioSource.isPlaying;
     }
 
-    void OnDestroy()
-    {
-        if (trackSplinePointsNativeArray.IsCreated)
-            trackSplinePointsNativeArray.Dispose();
-
-        if (blocksDataNativeArray.IsCreated)
-            blocksDataNativeArray.Dispose();
-
-        if (blocksTransformsAccessArray.isCreated)
-            blocksTransformsAccessArray.Dispose();
-    }
-
     public static GameManager GetGameManager()
     {
         return GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
@@ -196,7 +148,7 @@ public class GameManager : MonoBehaviour
     public void RestartSong()
     {
         endSongUi.SetActive(false);
-        IsGameRunning = true;
+        IsInTrackScene = true;
 
         audioSource.Stop();
         audioSource.Play();
@@ -204,8 +156,7 @@ public class GameManager : MonoBehaviour
         playerController.enabled = false;
         playerController.transform.position = Vector3.zero;
 
-        foreach (BlockManager blockManager in blocks)
-            blockManager.ResetBlock();
+        blocksManager.ResetAllBlocks();
 
         currentPoints = 0;
         currentPointsIncrement = 1;
@@ -227,27 +178,14 @@ public class GameManager : MonoBehaviour
     {
         endSongUi.SetActive(false);
 
-        IsGameRunning = false;
+        IsInTrackScene = false;
 
         selectFileUi.SetActive(true);
-        colorSyncher.enabled = false;
-        pauseManager.enabled = false;
-        Destroy(blocksContainer);
-        blocks.Clear();
-        blocksData.Clear();
-        blocksTransforms.Clear();
+
+        blocksManager.RemoveAllBlocks();
 
         Destroy(hexagonContainer);
         hexagonTransforms.Clear();
-
-        if (trackSplinePointsNativeArray.IsCreated)
-            trackSplinePointsNativeArray.Dispose();
-
-        if (blocksDataNativeArray.IsCreated)
-            blocksDataNativeArray.Dispose();
-
-        if (blocksTransformsAccessArray.isCreated)
-            blocksTransformsAccessArray.Dispose();
     }
 
     public void BlockPicked(BlockPosition blockPosition)
@@ -324,28 +262,11 @@ public class GameManager : MonoBehaviour
         songNameUiText.text = songTitle;
 
         // Spawn blocks
-        blocksContainer = new GameObject("Blocks container");
         float[][] spectrum = AudioUtils.GetAudioSpectrumAmplitudes(audioSource.clip, 4096);
+        blocksManager.SpawnBlocksOnTrack(spectrum, audioSource.clip, trackData);
 
-        lowBeatIndexes = AudioUtils.GetBeatIndexes(spectrum, audioSource.clip.frequency, audioSource.clip.channels, lowBeatFrequency, lowBeatThreshold, lowBeatSkip);
-        lowBeatIndexes2 = AudioUtils.GetBeatIndexes(spectrum, audioSource.clip.frequency, audioSource.clip.channels, lowBeatFrequency, lowBeatThreshold, 0);
-        highBeatIndexes = AudioUtils.GetBeatIndexes(spectrum, audioSource.clip.frequency, audioSource.clip.channels, highBeatFrequency, highBeatThreshold, highBeatSkip);
-        highBeatIndexes2 = AudioUtils.GetBeatIndexes(spectrum, audioSource.clip.frequency, audioSource.clip.channels, highBeatFrequency, 0.01f, 0);
-
-        RemoveNearBeats(lowBeatIndexes, highBeatIndexes, 5);
-
-        int spawnLocationNoise = 0;
-        SpawnBlocks(lowBeatIndexes, ref spawnLocationNoise);
-        SpawnBlocks(highBeatIndexes, ref spawnLocationNoise);
-
-        trackSplinePointsNativeArray = new NativeArray<Vector3>(trackData.splinePoints, Allocator.TempJob);
-        blocksDataNativeArray = new NativeArray<BlockData>(blocksData.ToArray(), Allocator.TempJob);
-        blocksTransformsAccessArray = new TransformAccessArray(blocksTransforms.ToArray());
-        updateBlocksPositionJob = new UpdateBlockPositionsJob()
-        {
-            trackSplinePoints = trackSplinePointsNativeArray,
-            blocksData = blocksDataNativeArray
-        };
+        lowBeatIndexes2 = AudioUtils.GetBeatIndexes(spectrum, audioSource.clip.frequency, audioSource.clip.channels, 20, 0.1f, 0);
+        highBeatIndexes2 = AudioUtils.GetBeatIndexes(spectrum, audioSource.clip.frequency, audioSource.clip.channels, 7500, 0.01f, 0);
 
         // Hexagon subwoofer spawn
         hexagonContainer = new GameObject("Hexagon container");
@@ -385,10 +306,8 @@ public class GameManager : MonoBehaviour
         selectFileUi.SetActive(false);
         ComputeTrackPoints();
 
-        colorSyncher.enabled = true;
-        pauseManager.enabled = true;
         audioSource.Play();
-        IsGameRunning = true;
+        IsInTrackScene = true;
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -406,38 +325,6 @@ public class GameManager : MonoBehaviour
 
         trackMeshFilter.mesh = trackData.mesh;
         trackMeshRenderer.material.SetFloat("_LineSubdivisions", 3000f * audioSource.clip.length / 160f);
-    }
-
-    private void SpawnBlocks(List<int> beatIndexes, ref int spawnLocationNoise)
-    {
-        foreach (int beatIndex in beatIndexes)
-        {
-            // 4 is due to spline correction
-            float percentage = (float)(beatIndex + 4) / (trackData.splinePoints.Length - 4);
-            float blockSpawnZPosition = ((beatIndex + spawnLocationNoise) % 3 - 1) * maxDistanceFromCenter;
-
-            GameObject block = Instantiate(blockPrefab,
-                trackData.spline.GetPointAt(percentage) + Vector3.forward * blockSpawnZPosition,
-                Quaternion.LookRotation(trackData.spline.GetTangentAt(percentage), Vector3.up),
-                blocksContainer.transform);
-
-            BlockPosition blockPosition = BlockPosition.CENTER;
-            if (blockSpawnZPosition > Mathf.Epsilon)
-                blockPosition = BlockPosition.LEFT;
-            else if (blockSpawnZPosition < -Mathf.Epsilon)
-                blockPosition = BlockPosition.RIGHT;
-
-            BlockManager blockManager = block.GetComponent<BlockManager>();
-            blockManager.Initialize(blockPosition, percentage);
-
-            blocks.Add(blockManager);
-
-            blocksData.Add(blockManager.GetBlockData(maxDistanceFromCenter));
-
-            blocksTransforms.Add(block.transform);
-
-            spawnLocationNoise++;
-        }
     }
 
     public float GetCurrentAudioTimePercentage()
@@ -472,45 +359,11 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
-    private void UpdateBlocksPositions(float currentPercentage)
-    {
-        updateBlocksPositionJob.currentPercentage = currentPercentage;
-        updateBlocksPositionJobHandle = updateBlocksPositionJob.Schedule(blocksTransformsAccessArray);
-        updateBlocksPositionJobHandle.Complete();
-    }
-
-    [BurstCompile]
-    private struct UpdateBlockPositionsJob : IJobParallelForTransform
-    {
-        [ReadOnly] public NativeArray<Vector3> trackSplinePoints;
-        [ReadOnly] public NativeArray<BlockData> blocksData;
-        [ReadOnly] public float currentPercentage;
-
-        public void Execute(int index, TransformAccess transform)
-        {
-            float finalPercentage = blocksData[index].endPercentage;
-            float currentBlockPercentage = Mathf.InverseLerp(finalPercentage - 0.5f, finalPercentage, currentPercentage);
-
-            float currentBlockPositionPercentage =
-                Mathf.Lerp(finalPercentage - 0.075f, finalPercentage, currentBlockPercentage);
-
-            float lerp = math.lerp(0, trackSplinePoints.Length - 4, currentBlockPositionPercentage);
-            int u = (int)lerp;
-            float inter = lerp % 1;
-
-            Vector3 position = Vector3.Lerp(trackSplinePoints[u], trackSplinePoints[u + 1], inter) + Vector3.forward * blocksData[index].zPosition;
-            Quaternion rotation = Quaternion.LookRotation(trackSplinePoints[u + 1] - trackSplinePoints[u], Vector3.up);
-
-            transform.position = position;
-            transform.rotation = rotation;
-        }
-    }
-
     private void ComputeTrackPoints()
     {
         totalTrackPoints = 0;
         int increment = 1;
-        for (int i = 0; i < blocksData.Count; i++)
+        for (int i = 0; i < blocksManager.GetTotalBlocksCount(); i++)
         {
             totalTrackPoints += increment;
             increment = Mathf.Min(200, increment + 4);

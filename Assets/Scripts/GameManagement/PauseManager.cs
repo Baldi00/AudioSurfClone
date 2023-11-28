@@ -21,7 +21,10 @@ public class PauseManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && gameManager.IsGameRunning)
+        if (!gameManager.IsInTrackScene)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             SetPaused(!isPaused);
             SetCursorVisibility(isPaused);

@@ -19,6 +19,9 @@ public class ColorSyncher : MonoBehaviour
 
     void Update()
     {
+        if (!gameManager.IsInTrackScene)
+            return;
+
         SyncColorSynchables();
     }
 
