@@ -6000,6 +6000,7 @@ MonoBehaviour:
   blockMaterial: {fileID: 2100000, guid: 84f570d55079b774ba8bd501b4c92fb1, type: 2}
   hexagonSubwooferMaterial: {fileID: 2100000, guid: 3a1cb3ec60110fc459919f60c637fa5a,
     type: 2}
+  startAudioDelay: 1
   songNameUiText: {fileID: 1921914956}
   songTimeUi: {fileID: 993733344}
   trackVisualizer: {fileID: 1649067795}
@@ -6122,7 +6123,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hexagonSubwooferPrefab: {fileID: 667289278054755622, guid: 4cb2b476d018e4545b3b8e908e358f7e,
     type: 3}
-  hexagonBeatDuration: 0.2
+  hexagonBeatDuration: 0.5
   horizontalOffset: 35
   verticalOffset: 5
   rotationAngle: 60
