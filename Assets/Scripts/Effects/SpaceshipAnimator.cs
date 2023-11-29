@@ -28,7 +28,7 @@ public class SpaceshipAnimator : MonoBehaviour
         currentPitch = pitchAmplitude * (Mathf.Sin(pitchFrequency * Time.time) * 0.5f + 0.5f);
         currentFloating = floatingAmplitude * (Mathf.Sin(floatingFrequency * Time.time) * 0.5f + 0.5f);
 
-        currentRoll += -Input.GetAxis("Mouse X") * Time.deltaTime * rollRotationSpeed;
+        currentRoll += -Input.GetAxis("Mouse X") * Time.timeScale * (rollRotationSpeed * 0.016f);
 
         if (currentRoll > 1)
             currentRoll -= rollRotationSpeed / 3.5f * Time.deltaTime;
