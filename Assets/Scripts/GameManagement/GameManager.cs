@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private FireworksManager fireworksManager;
     [SerializeField] private RaysManager raysManager;
     [SerializeField] private HexagonsManager hexagonsManager;
+    [SerializeField] private List<ParticleSystem> particles;
 
     [Header("End song UI")]
     [SerializeField] private TextMeshProUGUI endSongTitle;
@@ -97,8 +98,8 @@ public class GameManager : MonoBehaviour
         playerController.transform.position = Vector3.zero;
 
         blocksManager.ResetAllBlocks();
-
         pointsManager.ResetPoints();
+        particles.ForEach(particle => particle.Clear());
 
         playerController.enabled = true;
     }
@@ -113,6 +114,7 @@ public class GameManager : MonoBehaviour
 
         blocksManager.RemoveAllBlocks();
         hexagonsManager.RemoveAllHexagons();
+        particles.ForEach(particle => particle.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear));
     }
 
     public void BlockPicked(BlockPosition blockPosition)
@@ -183,6 +185,7 @@ public class GameManager : MonoBehaviour
         selectFileUi.SetActive(false);
         trackVisualizer.ShowTrackUi(trackData);
 
+        particles.ForEach(particle => particle.Play());
         // Start audio
         audioSource.Play();
         IsInTrackScene = true;
