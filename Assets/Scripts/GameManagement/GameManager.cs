@@ -21,6 +21,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Material blockMaterial;
     [SerializeField] private Material hexagonSubwooferMaterial;
 
+    [SerializeField] private float startAudioDelay = 1f;
+
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI songNameUiText;
     [SerializeField] private TextMeshProUGUI songTimeUi;
@@ -66,7 +68,7 @@ public class GameManager : MonoBehaviour
         Color currentColor = trackData.spline.GetColorAt(currentPercentage);
         hexagonSubwooferMaterial.color = currentColor;
         blockMaterial.color = currentColor;
-        
+
         blocksManager.UpdateBlocksPositions(currentPercentage);
         hexagonsManager.UpdateHexagonsScale(currentPercentage);
         trackVisualizer.UpdateTrackVisualizerPosition(currentPercentage);
@@ -92,7 +94,7 @@ public class GameManager : MonoBehaviour
         IsInTrackScene = true;
 
         audioSource.Stop();
-        audioSource.Play();
+        audioSource.PlayDelayed(startAudioDelay);
 
         playerController.enabled = false;
         playerController.transform.position = Vector3.zero;
@@ -186,8 +188,9 @@ public class GameManager : MonoBehaviour
         trackVisualizer.ShowTrackUi(trackData);
 
         particles.ForEach(particle => particle.Play());
+
         // Start audio
-        audioSource.Play();
+        audioSource.PlayDelayed(startAudioDelay);
         IsInTrackScene = true;
     }
 
