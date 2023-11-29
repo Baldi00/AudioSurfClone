@@ -29,4 +29,10 @@ public class Utils
     {
         return path.EndsWith(".mp3");
     }
+
+    public static void SetCursorVisibility(bool visible)
+    {
+        Cursor.visible = visible;
+        Cursor.lockState = visible ? CursorLockMode.None : CursorLockMode.Confined;
+    }
 }

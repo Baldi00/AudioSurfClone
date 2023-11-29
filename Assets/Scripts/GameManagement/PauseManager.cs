@@ -25,23 +25,26 @@ public class PauseManager : MonoBehaviour
             return;
 
         if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            SetPaused(!isPaused);
-            SetCursorVisibility(isPaused);
-        }
+            TriggerPause();
+    }
+
+    public void TriggerPause()
+    {
+        SetPaused(!isPaused);
+        Utils.SetCursorVisibility(isPaused);
     }
 
     public void RestartSong()
     {
         gameManager.RestartSong();
         SetPaused(false);
-        SetCursorVisibility(false);
+        Utils.SetCursorVisibility(false);
     }
 
     public void BackToSelectSongMenu()
     {
         SetPaused(false);
-        SetCursorVisibility(true);
+        Utils.SetCursorVisibility(true);
         audioSource.Stop();
         audioSource.clip = null;
         gameManager.BackToSelectMenu();
@@ -63,11 +66,5 @@ public class PauseManager : MonoBehaviour
 
         Time.timeScale = isPaused ? 0 : 1;
         pauseCanvas.SetActive(isPaused);
-    }
-
-    private void SetCursorVisibility(bool visible)
-    {
-        Cursor.visible = visible;
-        Cursor.lockState = visible ? CursorLockMode.None : CursorLockMode.Locked;
     }
 }

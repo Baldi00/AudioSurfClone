@@ -179,7 +179,7 @@ public class GameManager : MonoBehaviour
         raysManager.Initialize();
 
         // Setup UI
-        SetCursorVisibility(false);
+        Utils.SetCursorVisibility(false);
         selectFileUi.SetActive(false);
         trackVisualizer.ShowTrackUi(trackData);
 
@@ -210,7 +210,7 @@ public class GameManager : MonoBehaviour
     private void OnAudioEnded()
     {
         IsInTrackScene = false;
-        SetCursorVisibility(true);
+        Utils.SetCursorVisibility(true);
         endSongScore.text =
             $"SCORE: {pointsManager.CurrentPoints}/{pointsManager.TotalTrackPoints} " +
             $"({pointsManager.CurrentPoints * 100f / pointsManager.TotalTrackPoints:0.00}%)<br>" +
@@ -227,11 +227,5 @@ public class GameManager : MonoBehaviour
         int totalMinutes = (int)(audioLength / 60);
         int totalSeconds = (int)(audioLength % 60);
         songTimeUi.text = $"{currentMinutes}:{currentSeconds:00} / {totalMinutes}:{totalSeconds:00}";
-    }
-
-    private void SetCursorVisibility(bool visible)
-    {
-        Cursor.visible = visible;
-        Cursor.lockState = visible ? CursorLockMode.None : CursorLockMode.Locked;
     }
 }
