@@ -53,7 +53,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 056ebcc06248e0441be0feb93e4d694c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  colorSyncher: {fileID: 0}
   colorDelta: 0.06
 --- !u!114 &9062725930861426159
 MonoBehaviour:
@@ -76,7 +75,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9062725930861426144}
   serializedVersion: 8
-  lengthInSec: 1.5
+  lengthInSec: 0.9
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -151,7 +150,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1.5
+      scalar: 0.9
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -204,7 +203,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 17
+      scalar: 15
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -320,8 +319,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0.8
-      minScalar: 0.45
+      scalar: 0.65
+      minScalar: 0.3
       maxCurve:
         serializedVersion: 2
         m_Curve:

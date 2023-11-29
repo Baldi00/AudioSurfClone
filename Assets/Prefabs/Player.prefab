@@ -375,8 +375,8 @@ MonoBehaviour:
   rotationToTangentSmoothness: 2.5
   mouseSpeed: 0.35
   maxInputOffset: 3
-  minCameraDistancePosition: {x: 0, y: 1.376, z: -2.143}
-  maxCameraDistancePosition: {x: 0, y: 2.424, z: -4.069}
+  minCameraDistancePosition: {x: 0, y: 2, z: -4}
+  maxCameraDistancePosition: {x: 0, y: 4, z: -6}
   minRocketFireDistance: 7
   maxRocketFireDistance: 15
   playerCameraTransform: {fileID: 330585546}
