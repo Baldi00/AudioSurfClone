@@ -26,6 +26,8 @@ public class PointsManager : MonoBehaviour
             TotalTrackPoints += increment;
             increment = Mathf.Min(200, increment + 4);
         }
+
+        UpdateUi();
     }
 
     public void BlockPicked()
