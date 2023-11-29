@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Events;
 using TMPro;
+using UnityEngine.Android;
 
 public class FileBrowser : MonoBehaviour
 {
@@ -21,11 +22,11 @@ public class FileBrowser : MonoBehaviour
 
     void Start()
     {
-        foundMusicFiles = new Dictionary<string, string>();
-        SearchMusicFiles(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic));
-
-        searchBarInputField.onValueChanged.AddListener(OnSearchBarValueChange);
-        SetupStartButtons();
+#if UNITY_ANDROID && !UNITY_EDITOR
+        CheckAndroidPermission();
+#else
+        SetupFileBrowser();
+#endif
     }
 
     /// <summary>
@@ -88,11 +89,14 @@ public class FileBrowser : MonoBehaviour
         searchBarInputField.text = "";
 
         DeleteChildren(buttonsContainer);
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        CreateButton(GetAndroidInternalFilesDir() + "/Music", SelectButtonType.DIRECTORY);
+        CreateButton(GetAndroidInternalFilesDir(), SelectButtonType.DIRECTORY);
+#else
         CreateButton(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), SelectButtonType.DIRECTORY);
         CreateButton(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), SelectButtonType.DIRECTORY);
-
-        foreach (DriveInfo drive in DriveInfo.GetDrives())
-            CreateButton(drive.RootDirectory.FullName, SelectButtonType.DIRECTORY);
+#endif
     }
 
     /// <summary>
@@ -207,4 +211,72 @@ public class FileBrowser : MonoBehaviour
             Destroy(child);
         }
     }
+
+    /// <summary>
+    /// Returns the path to the internal storage drive on android devices
+    /// </summary>
+    /// <returns>The path to the internal storage drive on android devices</returns>
+    public static string GetAndroidInternalFilesDir()
+    {
+        string[] potentialDirectories = new string[]
+        {
+            "/storage/emulated/0",
+            "/mnt/sdcard",
+            "/sdcard",
+            "/storage/sdcard0",
+            "/storage/sdcard1"
+        };
+
+        if (Application.platform == RuntimePlatform.Android)
+            for (int i = 0; i < potentialDirectories.Length; i++)
+                if (Directory.Exists(potentialDirectories[i]))
+                    return potentialDirectories[i];
+
+        return "";
+    }
+
+    private void SetupFileBrowser()
+    {
+        foundMusicFiles = new Dictionary<string, string>();
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        SearchMusicFiles(GetAndroidInternalFilesDir() + "/Music");
+#else
+        SearchMusicFiles(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic));
+#endif
+
+        searchBarInputField.onValueChanged.AddListener(OnSearchBarValueChange);
+        SetupStartButtons();
+    }
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+    private void CheckAndroidPermission()
+    {
+        if (Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead))
+            SetupFileBrowser();
+        else
+        {
+            var callbacks = new PermissionCallbacks();
+            callbacks.PermissionDenied += PermissionDenied;
+            callbacks.PermissionGranted += PermissionGranted;
+            callbacks.PermissionDeniedAndDontAskAgain += PermissionDeniedAndDontAskAgain;
+            Permission.RequestUserPermission(Permission.ExternalStorageRead, callbacks);
+        }
+    }
+
+    private void PermissionDeniedAndDontAskAgain(string permissionName)
+    {
+        Application.Quit();
+    }
+
+    private void PermissionGranted(string permissionName)
+    {
+        SetupFileBrowser();
+    }
+
+    private void PermissionDenied(string permissionName)
+    {
+        Application.Quit();
+    }
+#endif
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEngine;
 
@@ -57,6 +58,12 @@ public class GameManager : MonoBehaviour
         IsInTrackScene = false;
         fileBrowser.AddOnAudioFileSelectedListener((songPath) => StartCoroutine(LoadAudio(songPath, StartGame)));
         endSongUi.SetActive(false);
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        Application.targetFrameRate = 60;
+#else
+        Application.targetFrameRate = 0;
+#endif
     }
 
     void Update()
@@ -156,7 +163,8 @@ public class GameManager : MonoBehaviour
     private IEnumerator LoadAudio(string songPath, Action onAudioLoaded = null)
     {
         this.songPath = songPath;
-        yield return StartCoroutine(AudioUtils.LoadAudio("file:\\\\" + songPath, audioSource));
+        char separator = Path.DirectorySeparatorChar;
+        yield return StartCoroutine(AudioUtils.LoadAudio($"file:{separator}{separator}{songPath}", audioSource));
         onAudioLoaded?.Invoke();
     }
 
