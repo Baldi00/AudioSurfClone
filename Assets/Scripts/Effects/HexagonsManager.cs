@@ -5,6 +5,9 @@ public class HexagonsManager : MonoBehaviour
 {
     [SerializeField] private GameObject hexagonSubwooferPrefab;
     [SerializeField] private float hexagonBeatDuration;
+    [SerializeField] private float horizontalOffset = 35f;
+    [SerializeField] private float verticalOffset = 5f;
+    [SerializeField] private float rotationAngle = 60f;
 
     private GameObject hexagonsContainer;
     private TrackData trackData;
@@ -12,7 +15,6 @@ public class HexagonsManager : MonoBehaviour
     private List<int> lowBeatIndexes;
     private List<int> highBeatIndexes;
 
-    private GameObject hexagonContainer;
     private List<Transform> hexagonTransforms;
     private float hexagonTimer;
     private Vector3 hexagonStartScale;
@@ -33,8 +35,18 @@ public class HexagonsManager : MonoBehaviour
         hexagonsContainer = new GameObject("Hexagon container");
         for (int i = 0; i < trackData.splinePoints.Length; i += (int)Mathf.Lerp(128, 1, trackData.normalizedIntensities[i] * trackData.normalizedIntensities[i]))
         {
-            hexagonTransforms.Add(Instantiate(hexagonSubwooferPrefab, trackData.splinePoints[i] + 50 * Vector3.forward + 4 * Vector3.up, Quaternion.Euler(0, 60, 0), hexagonsContainer.transform).transform);
-            hexagonTransforms.Add(Instantiate(hexagonSubwooferPrefab, trackData.splinePoints[i] - 50 * Vector3.forward + 4 * Vector3.up, Quaternion.Euler(0, 120, 0), hexagonsContainer.transform).transform);
+            Transform hex1 = Instantiate(hexagonSubwooferPrefab,
+                trackData.splinePoints[i] + horizontalOffset * Vector3.forward + verticalOffset * Vector3.up,
+                Quaternion.Euler(0, rotationAngle, 0),
+                hexagonsContainer.transform).transform;
+
+            Transform hex2 = Instantiate(hexagonSubwooferPrefab,
+                trackData.splinePoints[i] - horizontalOffset * Vector3.forward + verticalOffset * Vector3.up,
+                Quaternion.Euler(0, 180 - rotationAngle, 0),
+                hexagonsContainer.transform).transform;
+
+            hexagonTransforms.Add(hex1);
+            hexagonTransforms.Add(hex2);
         }
     }
 
@@ -64,7 +76,7 @@ public class HexagonsManager : MonoBehaviour
 
     public void RemoveAllHexagons()
     {
-        Destroy(hexagonContainer);
+        Destroy(hexagonsContainer);
         hexagonTransforms.Clear();
     }
 }
