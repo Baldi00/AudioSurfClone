@@ -30,10 +30,10 @@ public class HexagonsManager : MonoBehaviour
         this.trackData = trackData;
 
         lowBeatIndexes = AudioUtils.GetBeatIndexes(spectrum, audioClip.frequency, audioClip.channels, 20, 0.1f, 0);
-        highBeatIndexes = AudioUtils.GetBeatIndexes(spectrum, audioClip.frequency, audioClip.channels, 7500, 0.01f, 0);
+        highBeatIndexes = AudioUtils.GetBeatIndexes(spectrum, audioClip.frequency, audioClip.channels, 7500, 0.01f, 0.15f);
 
         hexagonsContainer = new GameObject("Hexagon container");
-        for (int i = 0; i < trackData.splinePoints.Length; i += (int)Mathf.Lerp(128, 1, trackData.normalizedIntensities[i] * trackData.normalizedIntensities[i]))
+        for (int i = 0; i < trackData.splinePoints.Length; i += (int)Mathf.Lerp(128, 32, trackData.normalizedIntensities[i] * trackData.normalizedIntensities[i]))
         {
             Transform hex1 = Instantiate(hexagonSubwooferPrefab,
                 trackData.splinePoints[i] + horizontalOffset * Vector3.forward + verticalOffset * Vector3.up,
@@ -53,17 +53,17 @@ public class HexagonsManager : MonoBehaviour
     public void UpdateHexagonsScale(float currentPercentage)
     {
         trackData.spline.GetSubSplineIndexes(currentPercentage, out int currentIndex, out _);
-        if (lowBeatIndexes.Contains(currentIndex))
+        if (lowBeatIndexes.Contains(currentIndex) && hexagonTimer < hexagonBeatDuration / 2)
         {
             hexagonTimer = hexagonBeatDuration;
             foreach (Transform hexagonTransform in hexagonTransforms)
                 hexagonTransform.localScale = hexagonStartScale * 1.5f;
         }
-        else if (highBeatIndexes.Contains(currentIndex) && hexagonTimer < hexagonBeatDuration / 2)
+        else if (highBeatIndexes.Contains(currentIndex) && hexagonTimer < hexagonBeatDuration / 6)
         {
-            hexagonTimer = hexagonBeatDuration / 4;
+            hexagonTimer = hexagonBeatDuration / 6;
             foreach (Transform hexagonTransform in hexagonTransforms)
-                hexagonTransform.localScale = hexagonStartScale * 1.125f;
+                hexagonTransform.localScale = hexagonStartScale * (1 + 0.5f / 6);
         }
         else if (hexagonTimer > 0)
         {
