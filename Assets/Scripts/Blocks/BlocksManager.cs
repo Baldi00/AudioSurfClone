@@ -60,9 +60,8 @@ public class BlocksManager : MonoBehaviour
 
         RemoveNearBeats(lowBeatIndexes, highBeatIndexes, 5);
 
-        int spawnLocationNoise = 0;
-        SpawnBlocks(lowBeatIndexes, ref spawnLocationNoise);
-        SpawnBlocks(highBeatIndexes, ref spawnLocationNoise);
+        SpawnBlocks(lowBeatIndexes);
+        SpawnBlocks(highBeatIndexes);
 
         trackSplinePointsNativeArray = new NativeArray<Vector3>(trackData.splinePoints, Allocator.Persistent);
         blocksDataNativeArray = new NativeArray<BlockData>(blocksData.ToArray(), Allocator.Persistent);
@@ -128,13 +127,22 @@ public class BlocksManager : MonoBehaviour
         return false;
     }
 
-    private void SpawnBlocks(List<int> beatIndexes, ref int spawnLocationNoise)
+    private void SpawnBlocks(List<int> beatIndexes)
     {
+        int previousIndex = beatIndexes[0];
+        int noise;
         foreach (int beatIndex in beatIndexes)
         {
+            if (beatIndex % 3 - 1 == previousIndex % 3 - 1)
+                noise = beatIndex % 2 + 1;
+            else
+                noise = 0;
+
+            previousIndex = beatIndex + noise;
+
             // 4 is due to spline correction
             float percentage = (float)(beatIndex + 4) / (trackData.splinePoints.Length - 4);
-            float blockSpawnZPosition = ((beatIndex + spawnLocationNoise) % 3 - 1) * maxDistanceFromCenter;
+            float blockSpawnZPosition = ((beatIndex + noise) % 3 - 1) * maxDistanceFromCenter;
 
             GameObject block = Instantiate(blockPrefab,
                 trackData.spline.GetPointAt(percentage) + Vector3.forward * blockSpawnZPosition,
@@ -155,8 +163,6 @@ public class BlocksManager : MonoBehaviour
             blocksData.Add(blockManager.GetBlockData(maxDistanceFromCenter));
 
             blocksTransforms.Add(block.transform);
-
-            spawnLocationNoise++;
         }
     }
 }
