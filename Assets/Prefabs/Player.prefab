@@ -373,7 +373,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationToTangentSmoothness: 2.5
-  mouseSpeed: 1
+  mouseSpeed: 0.35
   maxInputOffset: 3
   minCameraDistancePosition: {x: 0, y: 1.376, z: -2.143}
   maxCameraDistancePosition: {x: 0, y: 2.424, z: -4.069}
@@ -15158,14 +15158,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 224bbbd97f488e6419a350e10180c9ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  positionOffset: {x: 0, y: 0.1, z: 0}
+  positionOffset: {x: 0, y: 0.2, z: 0}
   pitchAmplitude: 10
   pitchFrequency: 1
   floatingAmplitude: 0.2
   floatingFrequency: 5
-  rollMultiplier: 30000
   maxRoll: 30
-  rollSmoothing: 0.975
+  rollRotationSpeed: 220
 --- !u!1 &5450535941194414487
 GameObject:
   m_ObjectHideFlags: 0
