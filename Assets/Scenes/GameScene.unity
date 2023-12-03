@@ -6379,7 +6379,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82310018b00d4764888c3ec749e5e6bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameUiContainer: {fileID: 896278950}
+  gameUiContainer: {fileID: 1837062968}
   pointsUiText: {fileID: 809330729}
   pointsPercentageUiText: {fileID: 435477543}
   pointsIncrementPrefab: {fileID: 3645118111358617472, guid: 489f93ff8bac85247ab7f412e8f7a272,
