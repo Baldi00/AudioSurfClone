@@ -5,6 +5,10 @@ public class TrackVisualizer : MonoBehaviour
     [SerializeField] private LineRenderer trackVisualizer;
     [SerializeField] private RectTransform trackCurrentPointVisualizer;
 
+    /// <summary>
+    /// Shows the track path spline ui on screen
+    /// </summary>
+    /// <param name="trackData">The generated data of the current audio</param>
     public void ShowTrackUi(TrackData trackData)
     {
         float trackVisualizerWidth = (trackVisualizer.transform as RectTransform).rect.width;
@@ -37,15 +41,19 @@ public class TrackVisualizer : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates the current point of the visualizer on the track path spline ui
+    /// </summary>
+    /// <param name="currentPercentage">The current audio percentage</param>
     public void UpdateTrackVisualizerPosition(float currentPercentage)
     {
         float lerp = Mathf.Lerp(0, trackVisualizer.positionCount - 2, currentPercentage);
         int firstSubSplinePointIndex = (int)lerp;
         float subSplineInterpolator = lerp % 1;
 
-        trackCurrentPointVisualizer.localPosition = 
+        trackCurrentPointVisualizer.localPosition =
             Vector3.Lerp(
-                trackVisualizer.GetPosition(firstSubSplinePointIndex), 
+                trackVisualizer.GetPosition(firstSubSplinePointIndex),
                 trackVisualizer.GetPosition(firstSubSplinePointIndex + 1),
                 subSplineInterpolator);
     }

@@ -7,6 +7,10 @@ public class FireworksManager : MonoBehaviour
     [SerializeField] private List<ParticleSystem> centerFireworks;
     [SerializeField] private List<ParticleSystem> rightFireworks;
 
+    /// <summary>
+    /// Emits fireworks at the given block position
+    /// </summary>
+    /// <param name="blockPosition">The block position corresponding to the position of the fireworks</param>
     public void EmitFireworks(BlockPosition blockPosition)
     {
         List<ParticleSystem> currentParticleSystem = blockPosition switch

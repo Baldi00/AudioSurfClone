@@ -11,6 +11,11 @@ public struct UpdateBlockPositionsJob : IJobParallelForTransform
     [ReadOnly] public NativeArray<BlockData> blocksData;
     [ReadOnly] public float currentPercentage;
 
+    /// <summary>
+    /// Moves a block on the track
+    /// </summary>
+    /// <param name="index">The index of the block</param>
+    /// <param name="transform">The array of blocks transforms</param>
     public void Execute(int index, TransformAccess transform)
     {
         float finalPercentage = blocksData[index].endPercentage;

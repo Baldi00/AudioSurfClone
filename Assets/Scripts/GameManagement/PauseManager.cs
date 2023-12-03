@@ -28,12 +28,18 @@ public class PauseManager : MonoBehaviour
             TriggerPause();
     }
 
+    /// <summary>
+    /// Toggle the pause state of the game
+    /// </summary>
     public void TriggerPause()
     {
         SetPaused(!isPaused);
         Utils.SetCursorVisibility(isPaused);
     }
 
+    /// <summary>
+    /// Restarts the song and unpauses the game
+    /// </summary>
     public void RestartSong()
     {
         gameManager.RestartSong();
@@ -41,6 +47,9 @@ public class PauseManager : MonoBehaviour
         Utils.SetCursorVisibility(false);
     }
 
+    /// <summary>
+    /// Stops the current audio reproduction, returns to the selects song menu and unpauses the game
+    /// </summary>
     public void BackToSelectSongMenu()
     {
         SetPaused(false);
@@ -50,11 +59,18 @@ public class PauseManager : MonoBehaviour
         gameManager.BackToSelectMenu();
     }
 
+    /// <summary>
+    /// Closes the application
+    /// </summary>
     public void QuitGame()
     {
         Application.Quit();
     }
 
+    /// <summary>
+    /// Sets the pause state of the game (pauses audio reproduction, timeScale and shows pause canvas)
+    /// </summary>
+    /// <param name="isPaused">The pause state of the game</param>
     private void SetPaused(bool isPaused)
     {
         this.isPaused = isPaused;

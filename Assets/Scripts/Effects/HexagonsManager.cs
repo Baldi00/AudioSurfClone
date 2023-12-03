@@ -25,15 +25,24 @@ public class HexagonsManager : MonoBehaviour
         hexagonStartScale = hexagonSubwooferPrefab.transform.localScale;
     }
 
+    /// <summary>
+    /// Spawns the hexagons on the track in the beat positions
+    /// </summary>
+    /// <param name="spectrum">The spectrum of the audio clip</param>
+    /// <param name="audioClip">The audioClip containing the audio to reproduce</param>
+    /// <param name="trackData">The data generated for the given audioClip</param>
     public void SpawnHexagonsOnTrack(float[][] spectrum, AudioClip audioClip, TrackData trackData)
     {
         this.trackData = trackData;
 
-        lowBeatIndexes = AudioUtils.GetBeatIndexes(spectrum, audioClip.frequency, audioClip.channels, 20, 0.1f, 0);
-        highBeatIndexes = AudioUtils.GetBeatIndexes(spectrum, audioClip.frequency, audioClip.channels, 7500, 0.01f, 0.15f);
+        lowBeatIndexes =
+            AudioUtils.GetBeatIndexes(spectrum, audioClip.frequency, audioClip.channels, 20, 0.1f, 0);
+        highBeatIndexes =
+            AudioUtils.GetBeatIndexes(spectrum, audioClip.frequency, audioClip.channels, 7500, 0.01f, 0.15f);
 
         hexagonsContainer = new GameObject("Hexagon container");
-        for (int i = 0; i < trackData.splinePoints.Length; i += (int)Mathf.Lerp(128, 32, trackData.normalizedIntensities[i] * trackData.normalizedIntensities[i]))
+        for (int i = 0; i < trackData.splinePoints.Length;
+            i += (int)Mathf.Lerp(128, 32, trackData.normalizedIntensities[i] * trackData.normalizedIntensities[i]))
         {
             Transform hex1 = Instantiate(hexagonSubwooferPrefab,
                 trackData.splinePoints[i] + horizontalOffset * Vector3.forward + verticalOffset * Vector3.up,
@@ -50,6 +59,10 @@ public class HexagonsManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates the hexagons scale based on the current audio percentage
+    /// </summary>
+    /// <param name="currentPercentage">The current audio percentage</param>
     public void UpdateHexagonsScale(float currentPercentage)
     {
         trackData.spline.GetSubSplineIndexes(currentPercentage, out int currentIndex, out _);
@@ -70,10 +83,14 @@ public class HexagonsManager : MonoBehaviour
             hexagonTimer -= Time.deltaTime;
 
             foreach (Transform hexagonTransform in hexagonTransforms)
-                hexagonTransform.localScale = hexagonStartScale * Mathf.Lerp(1f, 1.5f, hexagonTimer / hexagonBeatDuration);
+                hexagonTransform.localScale = hexagonStartScale *
+                    Mathf.Lerp(1f, 1.5f, hexagonTimer / hexagonBeatDuration);
         }
     }
 
+    /// <summary>
+    /// Removes all the hexagons from the scene
+    /// </summary>
     public void RemoveAllHexagons()
     {
         Destroy(hexagonsContainer);

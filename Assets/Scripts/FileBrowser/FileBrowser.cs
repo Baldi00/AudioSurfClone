@@ -235,6 +235,9 @@ public class FileBrowser : MonoBehaviour
         return "";
     }
 
+    /// <summary>
+    /// Initializes the file browser in different ways if application is on Windows or Android
+    /// </summary>
     private void SetupFileBrowser()
     {
         foundMusicFiles = new Dictionary<string, string>();
@@ -250,6 +253,9 @@ public class FileBrowser : MonoBehaviour
     }
 
 #if UNITY_ANDROID && !UNITY_EDITOR
+    /// <summary>
+    /// Checks if the Android user has given the ExternalStorageRead permission and sets up the related callbacks
+    /// </summary>
     private void CheckAndroidPermission()
     {
         if (Permission.HasUserAuthorizedPermission(Permission.ExternalStorageRead))

@@ -6384,7 +6384,7 @@ MonoBehaviour:
   pointsPercentageUiText: {fileID: 435477543}
   pointsIncrementPrefab: {fileID: 3645118111358617472, guid: 489f93ff8bac85247ab7f412e8f7a272,
     type: 3}
-  pointsIncrementDistanceFromCenter: 0
+  pointsIncrementDistanceFromCenter: 200
 --- !u!114 &1649067797
 MonoBehaviour:
   m_ObjectHideFlags: 0

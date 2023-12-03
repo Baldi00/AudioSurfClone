@@ -17,6 +17,10 @@ public class PointsManager : MonoBehaviour
     public int PickedCount { get; private set; }
     public int MissedCount { get; private set; }
 
+    /// <summary>
+    /// Computes the total points of the current audio
+    /// </summary>
+    /// <param name="blocksCount">The total number of blocks for this audio</param>
     public void ComputeTrackTotalPoints(int blocksCount)
     {
         TotalTrackPoints = 0;
@@ -30,6 +34,9 @@ public class PointsManager : MonoBehaviour
         UpdateUi();
     }
 
+    /// <summary>
+    /// Adds the points and spawn the related ui
+    /// </summary>
     public void BlockPicked()
     {
         PickedCount++;
@@ -40,6 +47,9 @@ public class PointsManager : MonoBehaviour
         SpawnPointsIncrementUi($"+{currentPointsIncrement}", Color.white);
     }
 
+    /// <summary>
+    /// Removes the points and spawns the related ui
+    /// </summary>
     public void BlockMissed()
     {
         MissedCount++;
@@ -53,6 +63,9 @@ public class PointsManager : MonoBehaviour
         SpawnPointsIncrementUi($"-{Mathf.Min(CurrentPoints, 200)}", Color.red);
     }
 
+    /// <summary>
+    /// Resets the points system
+    /// </summary>
     public void ResetPoints()
     {
         CurrentPoints = 0;
@@ -64,12 +77,20 @@ public class PointsManager : MonoBehaviour
         DestroyAllPointsIncrementUi();
     }
 
+    /// <summary>
+    /// Updates the ui to match the inner model
+    /// </summary>
     private void UpdateUi()
     {
         pointsUiText.text = $"{CurrentPoints}";
         pointsPercentageUiText.text = (CurrentPoints * 100f / TotalTrackPoints).ToString("0.00") + "%";
     }
 
+    /// <summary>
+    /// Spawns the point increments ui with the given text and color
+    /// </summary>
+    /// <param name="text">The inner text of the spawned label</param>
+    /// <param name="color">The color of the spawned label</param>
     private void SpawnPointsIncrementUi(string text, Color color)
     {
         PointsIncrementUiMover pointsMover = Instantiate(pointsIncrementPrefab,
@@ -87,6 +108,9 @@ public class PointsManager : MonoBehaviour
         pointsIncrementUiSpawnPosition = -pointsIncrementUiSpawnPosition;
     }
 
+    /// <summary>
+    /// Destroys all the remaining points increment ui left in the scene
+    /// </summary>
     private void DestroyAllPointsIncrementUi()
     {
         PointsIncrementUiMover[] pointsIncrementUiMovers = FindObjectsOfType<PointsIncrementUiMover>();
