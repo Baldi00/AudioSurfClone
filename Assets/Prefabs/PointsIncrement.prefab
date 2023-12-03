@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3645118111358617485}
   - component: {fileID: 3645118111358617486}
   - component: {fileID: -5010060913710593410}
+  - component: {fileID: 6903317180236577059}
   m_Layer: 5
   m_Name: PointsIncrement
   m_TagString: Untagged
@@ -151,3 +152,17 @@ MonoBehaviour:
   pointsIncrementText: {fileID: 3645118111358617486}
   duration: 1
   speed: 75
+--- !u!114 &6903317180236577059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3645118111358617472}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86d66956c7b957547847a1a9477951dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  delayFrames: 1
+  toVisualize: {fileID: 3645118111358617486}
