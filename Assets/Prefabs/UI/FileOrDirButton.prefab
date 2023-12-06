@@ -154,8 +154,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bbab8064f40b924d88ba027f62e2afc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultHeight: 150
-  defaultScreenRatio: 0.5625
+  minHeight: 50
+  maxHeight: 150
+  minScreenRatio: 0.5625
+  maxScreenRatio: 1.7777778
 --- !u!1 &4102497468559044975
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,11 +5,11 @@ using UnityEngine.UI;
 [DisallowMultipleComponent]
 [RequireComponent(typeof(RectTransform))]
 
-public class AspectRatioHeightFitter : UIBehaviour, ILayoutSelfController
+public class AspectRatioWidthFitter : UIBehaviour, ILayoutSelfController
 {
     private RectTransform rectTransform = null;
-    [SerializeField] private float minHeight;
-    [SerializeField] private float maxHeight;
+    [SerializeField] private float minWidth;
+    [SerializeField] private float maxWidth;
     [SerializeField] private float minScreenRatio;
     [SerializeField] private float maxScreenRatio;
 
@@ -22,27 +22,22 @@ public class AspectRatioHeightFitter : UIBehaviour, ILayoutSelfController
     protected override void OnEnable()
     {
         base.OnEnable();
-        SetLayoutVertical();
-    }
-
-    void Update()
-    {
-        SetLayoutVertical();
+        SetLayoutHorizontal();
     }
 
     public void SetLayoutVertical()
     {
         if (rectTransform == null)
             return;
-
-        float aspectRatio = (float)Screen.width / Screen.height;
-        float height = Mathf.Lerp(minHeight, maxHeight, Mathf.InverseLerp(maxScreenRatio, minScreenRatio, aspectRatio));
-        rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
     }
 
     public void SetLayoutHorizontal()
     {
         if (rectTransform == null)
             return;
+
+        float aspectRatio = (float)Screen.width / Screen.height;
+        float width = Mathf.Lerp(minWidth, maxWidth, Mathf.InverseLerp(maxScreenRatio, minScreenRatio, aspectRatio));
+        rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
     }
 }
