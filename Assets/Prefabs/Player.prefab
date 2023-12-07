@@ -375,8 +375,10 @@ MonoBehaviour:
   rotationToTangentSmoothness: 2.5
   mouseSpeed: 0.35
   maxInputOffset: 3
-  minCameraDistancePosition: {x: 0, y: 2, z: -2.5}
-  maxCameraDistancePosition: {x: 0, y: 3.5, z: -5}
+  minDistanceCameraPositionLandscape: {x: 0, y: 1.376, z: -2.143}
+  maxDistanceCameraPositionLandscape: {x: 0, y: 2.424, z: -4.069}
+  minDistanceCameraPositionPortrait: {x: 0, y: 2, z: -2.5}
+  maxDistanceCameraPositionPortrait: {x: 0, y: 3.5, z: -5}
   minRocketFireDistance: 7
   maxRocketFireDistance: 15
   playerCameraTransform: {fileID: 330585546}
@@ -386,7 +388,7 @@ MonoBehaviour:
   - {fileID: 5475205376876423593}
   spaceShipTransform: {fileID: 1905209885520230355}
   pickSphereRadius: 0.3
-  pickSphereOffset: {x: 0, y: 0.25, z: -0.5}
+  pickSphereOffset: {x: 0, y: 0.25, z: -0.3}
   missSphereRadius: 10
   missSphereOffset: {x: 0, y: 0, z: 11}
 --- !u!114 &4484332075916799825
@@ -10349,7 +10351,7 @@ ParticleSystem:
   emitterVelocityMode: 1
   looping: 1
   prewarm: 1
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:
@@ -20178,7 +20180,7 @@ ParticleSystem:
   emitterVelocityMode: 1
   looping: 1
   prewarm: 1
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:

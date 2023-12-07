@@ -996,7 +996,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 911454905}
   m_HandleRect: {fileID: 911454904}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1876,7 +1876,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 29
+  m_fontSize: 72
   m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -3170,7 +3170,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 29
+  m_fontSize: 72
   m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -4063,7 +4063,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 29
+  m_fontSize: 72
   m_fontSizeBase: 28
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -4995,15 +4995,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1668160598, guid: 883353ef6d9d8e948bc3fda07b3e6226, type: 3}
-      propertyPath: pickSphereOffset.z
-      value: -0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 1031668055162649859, guid: 883353ef6d9d8e948bc3fda07b3e6226,
-        type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2742999946798501491, guid: 883353ef6d9d8e948bc3fda07b3e6226,
         type: 3}
       propertyPath: m_Name
@@ -5062,11 +5053,6 @@ PrefabInstance:
     - target: {fileID: 3268143590544987337, guid: 883353ef6d9d8e948bc3fda07b3e6226,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4755624312647858253, guid: 883353ef6d9d8e948bc3fda07b3e6226,
-        type: 3}
-      propertyPath: playOnAwake
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -6613,7 +6599,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.00012207031}
+  m_AnchoredPosition: {x: 0, y: -0.00024414062}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1695876529
@@ -7099,7 +7085,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 29
+  m_fontSize: 72
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1

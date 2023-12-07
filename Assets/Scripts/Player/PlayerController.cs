@@ -6,8 +6,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float rotationToTangentSmoothness = 2.5f;
     [SerializeField] private float mouseSpeed = 3f;
     [SerializeField] private float maxInputOffset = 5f;
-    [SerializeField] private Vector3 minCameraDistancePosition;
-    [SerializeField] private Vector3 maxCameraDistancePosition;
+    [SerializeField] private Vector3 minDistanceCameraPositionLandscape;
+    [SerializeField] private Vector3 maxDistanceCameraPositionLandscape;
+    [SerializeField] private Vector3 minDistanceCameraPositionPortrait;
+    [SerializeField] private Vector3 maxDistanceCameraPositionPortrait;
     [SerializeField] private float minRocketFireDistance = 0f;
     [SerializeField] private float maxRocketFireDistance = 5f;
 
@@ -26,6 +28,9 @@ public class PlayerController : MonoBehaviour
     private bool beatDone;
     private int previousU;
 
+    private Vector3 minDistanceCameraPosition;
+    private Vector3 maxDistanceCameraPosition;
+
     // Cache
     private GameManager gameManager;
     private float currentAudioTimePercentage;
@@ -38,6 +43,10 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         gameManager = GameManager.GetGameManager();
+        minDistanceCameraPosition = Screen.width > Screen.height ?
+            minDistanceCameraPositionLandscape : minDistanceCameraPositionPortrait;
+        maxDistanceCameraPosition = Screen.width > Screen.height ?
+            maxDistanceCameraPositionLandscape : maxDistanceCameraPositionPortrait;
     }
 
     void Update()
@@ -68,7 +77,7 @@ public class PlayerController : MonoBehaviour
         // Update camera position
         currentSpeed = Mathf.InverseLerp(0.83f, 0f, currentColorHue);
         playerCameraTransform.localPosition =
-            Vector3.Lerp(maxCameraDistancePosition, minCameraDistancePosition, currentSpeed);
+            Vector3.Lerp(maxDistanceCameraPosition, minDistanceCameraPosition, currentSpeed);
 
         // Update color and rocket fires
         Color.RGBToHSV(trackSpline.GetColorAt(currentAudioTimePercentage), out currentColorHue, out _, out _);
