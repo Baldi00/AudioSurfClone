@@ -6564,6 +6564,10 @@ MonoBehaviour:
   - {fileID: 1355432617}
   - {fileID: 2117268757}
   - {fileID: 1106993982}
+  fireworksDurationPortrait: 0.9
+  startSizePortrait: {x: 0.3, y: 0.65}
+  fireworksDurationLandscape: 1.5
+  startSizeLandscape: {x: 0.45, y: 0.8}
 --- !u!1 &1695876527
 GameObject:
   m_ObjectHideFlags: 0
