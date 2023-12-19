@@ -6,8 +6,6 @@ As the original subtitle of the game said (Ride Your Music) you can play any MP3
 
 <img src="androidGIF.gif">
 
-https://github.com/Baldi00/AudioSurfClone/assets/46602744/915df928-0a2f-4d03-bad6-fc1707b8f9c6
-
 ## Learning
 With this project I practiced and learnt more about:
 - Audio signals & Fast Fourier Transform
