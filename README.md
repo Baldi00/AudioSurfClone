@@ -4,7 +4,7 @@ I tried to recreate one of my favourite games (and probably my most played one) 
 
 As the original subtitle of the game said (Ride Your Music) you can play any MP3 song on your <a href="https://github.com/Baldi00/AudioSurfClone/releases/download/v1.0/AudioSurfClone-WINDOWS.zip">Computer🚀</a> or <a href="https://github.com/Baldi00/AudioSurfClone/releases/download/v1.0/AudioSurfClone-ANDROID.apk">Mobile Phone🚀</a>
 
-<img src="androidGIF.gif">
+<img src="androidGIF.gif" alt="Demo GIF">
 
 ## Learning
 With this project I practiced and learnt more about:
